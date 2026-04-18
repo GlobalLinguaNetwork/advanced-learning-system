@@ -392,7 +392,8 @@
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6tWjvnxTDaG2J2Q-ZeXwOuUQQQeOgiLTETBa52NprlKSEj-O6R-S3vst20Km4KiwjGQ/exec';
 
 var GOAL_WORDS = 1000000;
-var GOAL_DATE  = getThirdMonday(new Date().getFullYear(), 2); // 2月第3月曜
+// ★ ゴールを 2027年1月15日 に設定 (JavaScriptの月は0始まりなので 0 = 1月)
+var GOAL_DATE  = new Date(2027, 0, 15); 
 
 // ── URL パラメータから Student ID 取得 ──
 var params = new URLSearchParams(location.search);
@@ -432,14 +433,14 @@ function loadDemo() {
     name: 'デモ 太郎',
     total: 312450,
     weeks: {
-      labels: ['4/1週','4/2週','4/3週','4/4週','5/1週','5/2週','5/3週','5/4週'],
-      values: [28000, 34500, 31200, 29800, 38000, 42100, 36700, 40200]
+      labels:['4/1週','4/2週','4/3週','4/4週','5/1週','5/2週','5/3週','5/4週'],
+      values:[28000, 34500, 31200, 29800, 38000, 42100, 36700, 40200]
     },
     tasks: {
-      labels: ['VOA Article','Science News','TED Talks','News in Levels','ESL Lab','elllo','シス単例文','Vocab Master','文法プリント'],
-      values: [62000, 54000, 48000, 38000, 28000, 22000, 28000, 21000, 11450]
+      labels:['VOA Article','Science News','TED Talks','News in Levels','ESL Lab','elllo','シス単例文','Vocab Master','文法プリント'],
+      values:[62000, 54000, 48000, 38000, 28000, 22000, 28000, 21000, 11450]
     },
-    logs: [
+    logs:[
       { date:'2025-05-24', task:'VOA Article',         cat:'Reading',   status:'完了', words:820,  duration:18, detail:'AI and Climate' },
       { date:'2025-05-24', task:'シス単例文付きチェックリスト', cat:'Vocab',     status:'完了', words:350,  duration:22, detail:'' },
       { date:'2025-05-23', task:'Science News',         cat:'Reading',   status:'完了', words:900,  duration:20, detail:'Deep Sea Discovery' },
@@ -469,7 +470,7 @@ function render(data) {
   renderGauge(data.total || 0);
   renderBar(data.weeks   || { labels:[], values:[] });
   renderPie(data.tasks   || { labels:[], values:[] });
-  renderLog(data.logs    || []);
+  renderLog(data.logs    ||[]);
 }
 
 // ── ゲージ ──
@@ -477,7 +478,10 @@ function renderGauge(total) {
   var pct        = Math.min(total / GOAL_WORDS, 1);
   var circumf    = 282.74;
   var offset     = circumf * (1 - pct);
+  
+  // ★ ゴール日までの残り日数を計算 (ミリ秒 -> 日に変換)
   var daysLeft   = Math.max(1, Math.ceil((GOAL_DATE - new Date()) / 86400000));
+  
   var remain     = Math.max(0, GOAL_WORDS - total);
   var dailyNeed  = remain > 0 ? Math.ceil(remain / daysLeft) : 0;
 
@@ -503,7 +507,7 @@ function renderBar(weeks) {
     type: 'bar',
     data: {
       labels: weeks.labels,
-      datasets: [{
+      datasets:[{
         label: '語数',
         data:  weeks.values,
         backgroundColor: 'rgba(26,127,212,.75)',
@@ -543,7 +547,7 @@ function renderBar(weeks) {
 
 // ── 円グラフ ──
 function renderPie(tasks) {
-  var colors = [
+  var colors =[
     '#1a7fd4','#c89a2e','#2e7d32','#8e24aa','#e53935',
     '#0097a7','#f57c00','#5c6bc0','#43a047'
   ];
@@ -552,7 +556,7 @@ function renderPie(tasks) {
     type: 'doughnut',
     data: {
       labels: tasks.labels,
-      datasets: [{
+      datasets:[{
         data:            tasks.values,
         backgroundColor: colors.slice(0, tasks.labels.length),
         borderColor:     '#ffffff',
@@ -653,15 +657,6 @@ function animateCount(el, from, to, duration, fmt) {
 
 function animateCountEl(id, from, to, duration, fmt) {
   animateCount(document.getElementById(id), from, to, duration, fmt);
-}
-
-function getThirdMonday(year, month) {
-  // month: 1-indexed
-  var d = new Date(year, month - 1, 1);
-  var day = d.getDay(); // 0=Sun
-  var daysToMon = (8 - day) % 7 || 7;
-  d.setDate(1 + daysToMon + 7); // 第3月曜
-  return d;
 }
 
 function showError(msg, type) {
