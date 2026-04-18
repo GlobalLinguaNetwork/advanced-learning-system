@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Academic Learning Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0c2340;
+  --blue:    #0b4f8a;
+  --accent:  #1a7fd4;
+  --gold:    #c89a2e;
+  --bg:      #f4f7fb;
+  --surface: #ffffff;
+  --border:  #dce8f4;
+  --text:    #1a2535;
+  --muted:   #5c6e82;
+  --radius:  12px;
+  --shadow:  0 2px 12px rgba(11,79,138,.09);
+  --error:   #ff5252;
+}
+
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  padding: 0 0 60px;
+}
+
+input, button {
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none; 
+}
+
+header {
+  background: var(--navy);
+  padding: 28px 24px 22px;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 90% 50%, rgba(26,127,212,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(200,154,46,.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-inner { max-width: 960px; margin: auto; position: relative; }
+.portal-label {
+  font-weight: 500; font-size: .75rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 400; color: #fff; line-height: 1.25;
+}
+header h1 em { font-style: italic; color: #a8cef0; }
+.header-sub { margin-top: 6px; font-size: .85rem; color: #8db5d8; }
+.id-row { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+.id-label {
+  font-size: .78rem; font-weight: 500;
+  color: #8db5d8; letter-spacing: .08em; text-transform: uppercase;
+}
+
+#sid {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 6px; color: #fff;
+  outline: none; width: 140px;
+  transition: all .2s;
+}
+#sid::placeholder { color: rgba(255,255,255,.3); }
+#sid:focus { background: rgba(255,255,255,.13); border-color: var(--gold); }
+#sid.is-valid { border-color: var(--gold); background: rgba(200,154,46,0.15); }
+#sid.is-invalid { border-color: var(--error); background: rgba(255,82,82,0.1); }
+
+.send-status {
+  margin-top: 14px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: .78rem; color: #8db5d8;
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 0 0 rgba(76,175,80,.5);
+  animation: pulse 2.4s infinite;
+  flex-shrink: 0;
+}
+.status-dot.idle { background: #78909c; animation: none; box-shadow: none; }
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(76,175,80,.5); }
+  70%  { box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+  100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
+}
+
+.flow-banner {
+  background: linear-gradient(135deg, #e8f1fb 0%, #f0f6ff 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 24px;
+}
+.flow-inner { max-width: 960px; margin: auto; }
+.flow-title {
+  font-size: .7rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 10px;
+}
+.flow-steps { display: flex; flex-wrap: wrap; gap: 6px 0; align-items: center; }
+.flow-step  { display: flex; align-items: center; gap: 8px; }
+.step-num {
+  width: 22px; height: 22px;
+  background: var(--blue); color: #fff;
+  border-radius: 50%; font-size: .72rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-text { font-size: .82rem; color: var(--text); }
+.step-text strong { font-weight: 600; }
+.flow-arrow { color: #b0c4d8; font-size: .9rem; padding: 0 8px; }
+@media (max-width: 600px) {
+  .flow-arrow { display: none; }
+  .flow-step { width: 100%; }
+}
+
+main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.icon-read  { background: #e5f3ff; }
+.icon-vocab { background: #fff4ce; }
+.icon-mgmt  { background: #e8f5e9; }
+.card-num {
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem; font-weight: 400;
+  color: var(--navy); line-height: 1.3;
+}
+.card-body { padding: 18px 20px; }
+
+.sub-section { margin-bottom: 18px; }
+.sub-section:last-child { margin-bottom: 0; }
+.sub-label {
+  font-size: .72rem; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sub-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+.hint { font-size: .8rem; color: var(--muted); margin-bottom: 10px; padding-left: 2px; }
+
+.btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+
+.mat-item {
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: #f0f6ff; border: 1px solid #cce0f5;
+  border-radius: 9px; padding: 14px;
+  position: relative; overflow: hidden;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.mat-item::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(26,127,212,.06) 0%, transparent 60%);
+  opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+@media (hover: hover) {
+  .mat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(11,79,138,.13);
+    border-color: var(--accent);
+  }
+  .mat-item:hover::after { opacity: 1; }
+  .mat-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(76,175,80,.12);
+    background: #e8f5e9; border-color: #4caf50;
+  }
+}
+
+.mat-item.sent { border-color: #4caf50 !important; background: #f0faf0 !important; }
+.mat-item.sent .send-badge { display: flex !important; }
+
+.send-badge {
+  display: none;
+  position: absolute; top: 6px; right: 8px;
+  font-size: .62rem; font-weight: 700;
+  color: #2e7d32; background: #c8e6c9;
+  padding: 1px 6px; border-radius: 4px;
+  align-items: center; z-index: 2;
+}
+
+.mat-item-header {
+  display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; z-index: 1; position: relative;
+}
+.mat-item-icon { font-size: 1.3rem; line-height: 1; }
+.mat-item-info { flex: 1; }
+.mat-item-name { font-weight: 600; font-size: .88rem; color: var(--navy); line-height: 1.2; margin-bottom: 4px;}
+.mat-item-meta { font-size: .72rem; color: var(--muted); line-height: 1.2; }
+.mat-item-words {
+  display: inline-block; font-size: .7rem; font-weight: 500;
+  color: var(--accent); background: rgba(26,127,212,.08);
+  padding: 2px 6px; border-radius: 4px; margin-top: 6px;
+}
+
+.mat-item-actions {
+  display: flex; gap: 8px; z-index: 1; position: relative;
+}
+.btn-task {
+  flex: 1; padding: 7px 0; border: none; border-radius: 6px;
+  font-size: .75rem; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  touch-action: manipulation;
+}
+.btn-start { background: var(--blue); color: #fff; }
+.btn-start:active:not(:disabled) { background: var(--navy); }
+.btn-start:disabled { background: #b0c4d8; color: #fff; cursor: not-allowed; }
+
+.btn-end { background: #fff; color: var(--blue); border: 1px solid var(--blue); }
+.btn-end:active:not(:disabled) { background: #e5f0fc; }
+.btn-end:disabled { border-color: #dce8f4; color: #a4bed8; cursor: not-allowed; background: #f4f7fb;}
+
+.mat-item-warm { background: #fffbf0; border-color: #f0dca8; }
+.mat-item-warm .btn-start { background: var(--gold); }
+.mat-item-warm .btn-start:active:not(:disabled) { background: #b08520; }
+.mat-item-warm .btn-end { border-color: var(--gold); color: #b08520; }
+.mat-item-warm .btn-end:active:not(:disabled) { background: #fff7e0; }
+
+.mat-btn {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  padding: 12px 14px;
+  background: #f2faf3; border: 1px solid #c3e6c8;
+  border-radius: 9px; cursor: pointer; text-align: left;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  position: relative; overflow: hidden; height: 100%;
+  touch-action: manipulation;
+}
+.mat-btn.sent { border-color: #4caf50 !important; background: #f0faf0 !important; }
+.mat-btn.sent .send-badge { display: flex !important; }
+
+.mat-btn-icon { font-size: 1.1rem; }
+.mat-btn-name { font-weight: 600; font-size: .88rem; color: var(--navy); line-height: 1.2; }
+.mat-btn-meta { font-size: .72rem; color: var(--muted); }
+
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+.submit-card {
+  background: linear-gradient(135deg, var(--navy) 0%, #163a5f 100%);
+  border: none;
+  box-shadow: 0 4px 24px rgba(11,79,138,.22);
+}
+.submit-card .card-header { border-bottom-color: rgba(255,255,255,.1); }
+.submit-card .card-num    { color: #8db5d8; }
+.submit-card .card-title  { color: #fff; }
+.submit-card .card-icon   { background: rgba(255,255,255,.1); }
+.submit-card .card-body   { padding: 20px; }
+
+.log-panel {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+#log-list { list-style: none; max-height: 130px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#log-list li {
+  font-size: .78rem; color: #c8ddf0;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; justify-content: space-between; gap: 8px;
+}
+#log-list li:last-child { border-bottom: none; }
+.log-words { color: #a8cef0; font-weight: 600; white-space: nowrap; }
+.log-empty { font-size: .78rem; color: #5c7a98; font-style: italic; }
+
+#toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--navy); color: #fff;
+  font-size: .82rem; padding: 9px 20px;
+  border-radius: 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.22);
+  opacity: 0;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  pointer-events: none; white-space: nowrap; z-index: 999;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+footer { margin-top: 40px; text-align: center; font-size: .75rem; color: var(--muted); }
+footer span { color: var(--gold); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeUp .4s ease both; }
+.card:nth-child(1) { animation-delay: .05s; }
+.card:nth-child(2) { animation-delay: .12s; }
+.card:nth-child(3) { animation-delay: .19s; }
+.card:nth-child(4) { animation-delay: .26s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="portal-label">Global Lingua Network &nbsp;/&nbsp; Try Individual</div>
+    <h1>Academic Learning <em>Portal</em></h1>
+    <p class="header-sub">自宅学習ポータル — 4技能トレーニング &amp; 100万語達成プログラム</p>
+    <div class="id-row">
+      <span class="id-label">Student ID</span>
+      <input id="sid" type="text" placeholder="IDを入力" oninput="validateId()" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="send-status">
+      <div class="status-dot idle" id="status-dot"></div>
+      <span id="status-text">データ連携：待機中</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-read">📖</div>
+      <div class="card-header-text">
+        <div class="card-num">Section 02</div>
+        <div class="card-title">多読・多聴 &amp; リスニング教材</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="sub-section">
+        <div class="sub-label">多読・多聴 &nbsp;— &nbsp;毎日 1 本以上</div>
+        <p class="hint">完了時に「学習した記事のタイトル」を手入力して記録します。</p>
+        <div class="btn-grid">
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">📡</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">VOA Learning English</div>
+                <div class="mat-item-meta">共テ準備レベル</div>
+                <div class="mat-item-words">≈ 820 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'VOA Article', 'https://learningenglish.voanews.com/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'VOA Article', 820, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">📰</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">News in Levels</div>
+                <div class="mat-item-meta">Level 1 のみ利用</div>
+                <div class="mat-item-words">≈ 600 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'News in Levels', 'https://www.newsinlevels.com/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'News in Levels', 600, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">🔬</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">Science News</div>
+                <div class="mat-item-meta">二次・準1レベル</div>
+                <div class="mat-item-words">≈ 900 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'Science News', 'https://www.sciencenewsforstudents.org/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'Science News', 900, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">🎤</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">TED Talks</div>
+                <div class="mat-item-meta">上級者向け</div>
+                <div class="mat-item-words">≈ 1,200 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'TED Talks', 'https://www.ted.com/talks')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'TED Talks', 1200, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sub-section">
+        <div class="sub-label">リスニング精聴トレーニング</div>
+        <p class="hint">完了時に「学習した記事のタイトル」を手入力して記録します。</p>
+        <div class="btn-grid">
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">🎧</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">ESL Lab</div>
+                <div class="mat-item-meta">レベル別リスニング</div>
+                <div class="mat-item-words">≈ 450 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Listening', 'ESL Lab', 'https://www.esl-lab.com/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Listening', 'ESL Lab', 450, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">🌍</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">elllo</div>
+                <div class="mat-item-meta">多国籍アクセント対応</div>
+                <div class="mat-item-words">≈ 500 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Listening', 'elllo', 'https://www.elllo.org/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Listening', 'elllo', 500, true)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-vocab">📚</div>
+      <div class="card-header-text">
+        <div class="card-num">Section 03</div>
+        <div class="card-title">語彙トレーニング &amp; 文法</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="sub-section">
+        <div class="sub-label">語彙 &amp; 文法教材 (自作アプリ)</div>
+        <p class="hint">「開始」を押すとアプリが開きます。アプリ内で学習を完了すると自動で記録されます。自動記録されない場合は「手動で完了記録」を押してください。</p>
+        <div class="btn-grid">
+
+          <div class="mat-item mat-item-warm">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">📋</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">シス単例文リスト</div>
+                <div class="mat-item-meta">スマホ最適化版</div>
+                <div class="mat-item-words">≈ 350 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'シス単例文付きチェックリスト', 'https://globallinguanetwork.github.io/systematic_vocaburary_list/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 350, false)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item mat-item-warm">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">⚡</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">Vocab Master</div>
+                <div class="mat-item-meta">単語帳 + Target</div>
+                <div class="mat-item-words">≈ 300 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'Vocab Master', 'https://globallinguanetwork.github.io/voc-app-v1.1/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 300, false)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+          <div class="mat-item mat-item-warm">
+            <span class="send-badge">✓ 記録済</span>
+            <div class="mat-item-header">
+              <div class="mat-item-icon">✏️</div>
+              <div class="mat-item-info">
+                <div class="mat-item-name">文法プリント</div>
+                <div class="mat-item-meta">スマホ最適化版</div>
+                <div class="mat-item-words">≈ 600 語</div>
+              </div>
+            </div>
+            <div class="mat-item-actions">
+              <button class="btn-task btn-start" onclick="startTask(this, 'Grammar', '文法プリント', 'https://globallinguanetwork.github.io/grammar_apps/')">▶ 開始</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 600, false)" disabled>■ 完了記録</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-mgmt">📊</div>
+      <div class="card-header-text">
+        <div class="card-num">Section 04</div>
+        <div class="card-title">学習管理メニュー</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="btn-grid">
+        <button class="mat-btn" onclick="openDashboard(this)">
+          <span class="send-badge">✓ 送信済</span>
+          <span class="mat-btn-icon">📈</span>
+          <span class="mat-btn-name">自宅学習の進捗確認</span>
+          <span class="mat-btn-meta">累計語数・グラフ表示</span>
+        </button>
+        <button class="mat-btn" onclick="recordActivity(this,'Portal','OneDrive資料',0, 'https://onedrive.live.com/')">
+          <span class="send-badge">✓ 開きました</span>
+          <span class="mat-btn-icon">☁️</span>
+          <span class="mat-btn-name">OneDrive 資料</span>
+          <span class="mat-btn-meta">個別フォルダ・添削資料</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card submit-card">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div class="card-header-text">
+        <div class="card-num">Session Log</div>
+        <div class="card-title">本日の進行ログ</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="log-panel">
+        <ul id="log-list">
+          <li class="log-empty" id="log-empty">まだ記録がありません</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  © Takumi Wakabayashi &nbsp;—&nbsp; <span>Global Lingua Network / Try</span>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+const VALID_IDS =["A001","122KQE","H66TO","13W9RT","663UQ","1EWQKV","AUF7E","1BYLPQ","1GL6OE","UYVCP","1MXH6R","1GNF1J","RU9BI","8NCIX","1DFCFC","1D3R6Q","17OVDS","1CK4D7","ZSZ8M","ED1UR","D3772","17QVBZ","GAAFK","18IJ8I","9J5KC","1HVNJ9","WX2VZ","1AFDK5","RI4BB"];
+
+const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeMn9RxfEnjXHvOxkfGa76WMjNik-Dmtqqi3JVkJhdVk1Of4w/formResponse';
+const FIELD = {
+  id:       'entry.1051903479',
+  date:     'entry.195542853',
+  cat:      'entry.2140103055',
+  status:   'entry.1146610982',
+  task:     'entry.1950352296',
+  detail:   'entry.1686550582',
+  duration: 'entry.2106921794',
+  words:    'entry.311109757'
+};
+
+const DASHBOARD_LINKS = { "A001": "", "122KQE": "", "H66TO":  "" };
+
+function validateId() {
+  const input = document.getElementById('sid');
+  const val = input.value.trim().toUpperCase();
+  input.value = val;
+  const isValid = VALID_IDS.includes(val);
+  input.classList.toggle('is-valid', isValid);
+  input.classList.toggle('is-invalid', !isValid && val.length > 0);
+  return isValid;
+}
+
+(function(){
+  const urlId = new URLSearchParams(location.search).get('id');
+  if(urlId) { document.getElementById('sid').value = urlId.toUpperCase(); validateId(); }
+})();
+
+let statusTimer;
+let toastTimer;
+
+let taskState = {};
+try {
+  const savedState = sessionStorage.getItem('gln_task_state');
+  if (savedState) taskState = JSON.parse(savedState);
+} catch(e) {}
+
+function saveTaskState() {
+  try { sessionStorage.setItem('gln_task_state', JSON.stringify(taskState)); } catch(e) {}
+}
+
+function hiddenPost(data){
+  const iframeName = 'hidden_iframe_' + Date.now();
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.name = iframeName;
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.action = FORM_ACTION;
+  form.method = 'POST';
+  form.target = iframeName;
+
+  const payload = {
+    [FIELD.id]:       data.id,[FIELD.date]:     new Date().toLocaleDateString('ja-JP'),
+    [FIELD.cat]:      data.cat,[FIELD.status]:   data.status,
+    [FIELD.task]:     data.task,[FIELD.detail]:   data.detail || '',
+    [FIELD.duration]: data.duration || 0,[FIELD.words]:    data.words || 0
+  };
+
+  for (const [key, value] of Object.entries(payload)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit(); 
+
+  setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
+  return true;
+}
+
+var POSTMSG_APPS =['シス単例文付きチェックリスト', 'Vocab Master', '文法プリント'];
+
+// 重複実行防止
+var processedTimestamps = {};
+
+// ★ 完了メッセージを一元処理する関数 ★
+function processCompleteMsg(data) {
+  if (!data || data.type !== 'GLN_COMPLETE') return;
+  if (data.timestamp && processedTimestamps[data.timestamp]) return; // 重複スキップ
+  if (data.timestamp) processedTimestamps[data.timestamp] = true;
+
+  var title   = data.title   || '';
+  var detail  = data.detail  || '';
+  var words   = data.words   || 0;
+  var cat     = data.cat     || '';
+
+  var sid = document.getElementById('sid').value.toUpperCase();
+  
+  var startTime = taskState[title] || (Date.now() - 10 * 60000);
+  var durationMs = Date.now() - startTime;
+  var durationMin = Math.max(1, Math.round(durationMs / 60000));
+  
+  if (taskState[title]) {
+    delete taskState[title];
+    saveTaskState();
+  }
+
+  // UIのボタン状態を更新 (getAttributeを使用して完全に確実にマッチング)
+  var items = document.querySelectorAll('.mat-item');
+  for (var i = 0; i < items.length; i++) {
+    var startBtn = items[i].querySelector('.btn-start');
+    var onclickStr = startBtn ? startBtn.getAttribute('onclick') : '';
+    
+    if (startBtn && onclickStr && onclickStr.indexOf(title) !== -1) {
+      var endBtn = items[i].querySelector('.btn-end');
+      if (endBtn) {
+        endBtn.disabled = true;
+        endBtn.innerHTML = '■ 完了記録'; // 手動ボタンをデフォルトの表示に戻す
+      }
+      startBtn.disabled = false;
+      startBtn.innerHTML = '▶ 再開する';
+      items[i].classList.add('sent');
+      setTimeout((function(el){ return function(){ el.classList.remove('sent'); }; })(items[i]), 2000);
+      break;
+    }
+  }
+
+  hiddenPost({ id: sid, cat: cat, status: '完了', task: title, detail: detail, duration: durationMin, words: words });
+  addLog('完了', cat, title, detail, durationMin);
+  showToast('✅ ' + title + ' の記録を自動送信しました');
+}
+
+// ── 1. PostMessage 経由の受信 ──
+window.addEventListener('message', function(event) {
+  processCompleteMsg(event.data);
+});
+
+// ── 2. LocalStorage 経由の受信 (スマホでタブが切り替わった際の強力なフォールバック) ──
+window.addEventListener('storage', function(e) {
+  if (e.key === 'GLN_SYNC_PAYLOAD' && e.newValue) {
+    try {
+      var data = JSON.parse(e.newValue);
+      processCompleteMsg(data);
+      localStorage.removeItem('GLN_SYNC_PAYLOAD');
+    } catch(err) {}
+  }
+});
+
+// ── 3. タブ復帰時にもLocalStorageをチェック ──
+window.addEventListener('focus', function() {
+  try {
+    var val = localStorage.getItem('GLN_SYNC_PAYLOAD');
+    if (val) {
+      var data = JSON.parse(val);
+      processCompleteMsg(data);
+      localStorage.removeItem('GLN_SYNC_PAYLOAD');
+    }
+  } catch(err) {}
+});
+
+function startTask(btn, cat, title, url) {
+  var sid = document.getElementById('sid').value.toUpperCase();
+  if(!VALID_IDS.includes(sid)) {
+    alert("有効な Student ID を入力してください。");
+    document.getElementById('sid').focus();
+    return;
+  }
+
+  var item = btn.closest('.mat-item');
+  var endBtn = item.querySelector('.btn-end');
+  
+  btn.disabled = true;
+  btn.innerHTML = '⏳ 進行中';
+
+  var isPostMsgApp = POSTMSG_APPS.indexOf(title) !== -1;
+  if (!isPostMsgApp) {
+    endBtn.disabled = false;
+  } else {
+    // ★ 修正：iOSなどで通信が遮断された時のために「手動完了」を許可する
+    endBtn.disabled = false;
+    endBtn.innerHTML = '✅ 手動で完了記録'; 
+  }
+  
+  taskState[title] = Date.now();
+  saveTaskState();
+
+  hiddenPost({ id: sid, cat: cat, status: '開始', task: title, detail: '', duration: 0, words: 0 });
+  addLog('開始', cat, title, '', 0);
+  showToast('🚀 学習を開始しました: ' + title);
+
+  if(url) {
+    var separator = url.includes('?') ? '&' : '?';
+    var targetUrl = url + separator + 'id=' + encodeURIComponent(sid);
+    window.open(targetUrl, '_blank');
+  }
+}
+
+function endTask(btn, cat, title, words, requireInput) {
+  var sid = document.getElementById('sid').value.toUpperCase();
+  
+  var extraInfo = "";
+  if(requireInput) {
+    extraInfo = prompt('【' + title + '】\n学習した記事のタイトル、またはURLを入力してください。\n（※後で振り返るための記録になります）');
+    if(extraInfo === null) return; 
+    extraInfo = extraInfo.trim();
+  }
+
+  var item = btn.closest('.mat-item');
+  var startBtn = item.querySelector('.btn-start');
+  
+  btn.disabled = true;
+  btn.innerHTML = '■ 完了記録';
+  startBtn.disabled = false;
+  startBtn.innerHTML = '▶ 再開する';
+  
+  var startTime = taskState[title] || Date.now();
+  var durationMs = Date.now() - startTime;
+  var durationMin = Math.max(1, Math.round(durationMs / 60000));
+  
+  delete taskState[title];
+  saveTaskState();
+
+  hiddenPost({ id: sid, cat: cat, status: '完了', task: title, detail: extraInfo, duration: durationMin, words: words });
+  addLog('完了', cat, title, extraInfo, durationMin);
+  showToast('✅ 学習記録を送信しました');
+  
+  item.classList.add('sent');
+  setTimeout(function(){ item.classList.remove('sent'); }, 2000);
+}
+
+function recordActivity(btn, cat, title, words, targetUrl = null){
+  const sid = document.getElementById('sid').value.toUpperCase();
+  if(!VALID_IDS.includes(sid)) {
+    alert("有効な Student ID を入力してください。");
+    document.getElementById('sid').focus();
+    return;
+  }
+  
+  hiddenPost({
+    id: sid, cat: cat, status: 'アクセス', task: title, detail: '', duration: 0, words: words
+  });
+
+  btn.classList.add('sent');
+  setTimeout(() => { btn.classList.remove('sent'); }, 2000);
+  addLog('アクセス', cat, title, '', 0);
+  showToast('✅ ' + title + ' の記録を送信しました');
+
+  if(targetUrl && targetUrl !== "") {
+    window.open(targetUrl, '_blank');
+  }
+}
+
+function addLog(statusStr, cat, title, detail, duration) {
+  const list = document.getElementById('log-list');
+  const empty = document.getElementById('log-empty');
+  if(empty) empty.remove();
+  
+  const hm = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+  const li = document.createElement('li');
+  
+  let text = `<span>${hm}　[${cat}] 【${statusStr}】${title}</span>`;
+  if(detail) text += `<span style="font-size:0.7rem; color:#8db5d8; margin-left:6px;">[${detail}]</span>`;
+  if(duration > 0) text += `<span class="log-words">${duration}分</span>`;
+  
+  li.innerHTML = text;
+  list.insertBefore(li, list.firstChild);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; 
+  t.classList.add('show');
+  
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  dot.classList.remove('idle');
+  text.textContent = msg;
+  
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => { 
+    dot.classList.add('idle'); 
+    text.textContent = 'データ連携：待機中'; 
+  }, 3500);
+}
+
+function openDashboard(btn) {
+  const sid = document.getElementById('sid').value.toUpperCase();
+  if(!VALID_IDS.includes(sid)) {
+    alert("有効な Student ID を入力してください。");
+    document.getElementById('sid').focus();
+    return;
+  }
+  const url = DASHBOARD_LINKS[sid];
+  if (url && url !== "") {
+    recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url);
+  } else {
+    alert("このIDのダッシュボードはまだ準備されていません。");
+  }
+}
+</script>
+
+</body>
+</html>
