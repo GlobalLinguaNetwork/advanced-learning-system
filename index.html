@@ -1,3 +1,13 @@
+
+
+
+Step 1の修正（手動記録時にタイトルやUnit名などの入力を促すプロンプトを表示させる対応）を実装したポータルの `index.html` のコードです。
+
+「シス単例文リスト」「Vocab Master」「文法プリント」の3箇所の `endTask` 関数について、最後の引数を `false` から `true` に変更しています。
+
+これをコピーして上書き保存してください。
+
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -510,7 +520,8 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'シス単例文付きチェックリスト', 'https://globallinguanetwork.github.io/systematic_vocaburary_list/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 350, false)" disabled>■ 完了記録</button>
+              <!-- ここを true に変更 -->
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 350, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -526,7 +537,8 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'Vocab Master', 'https://globallinguanetwork.github.io/voc-app-v1.1/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 300, false)" disabled>■ 完了記録</button>
+              <!-- ここを true に変更 -->
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 300, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -542,7 +554,8 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Grammar', '文法プリント', 'https://globallinguanetwork.github.io/grammar_apps/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 600, false)" disabled>■ 完了記録</button>
+              <!-- ここを true に変更 -->
+              <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 600, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
