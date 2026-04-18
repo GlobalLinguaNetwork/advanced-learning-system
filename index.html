@@ -701,7 +701,7 @@ function hiddenPost(data){
     [FIELD.duration]: data.duration || 0,[FIELD.words]:    data.words || 0
   };
 
-  for (const [key, value] of Object.entries(payload)) {
+  for (const[key, value] of Object.entries(payload)) {
     const input = document.createElement('input');
     input.type = 'hidden';
     input.name = key;
@@ -931,8 +931,12 @@ function openDashboard(btn) {
     document.getElementById('sid').focus();
     return;
   }
-  const url = DASHBOARD_LINKS[sid];
+  let url = DASHBOARD_LINKS[sid];
   if (url && url !== "") {
+    // URLにStudent IDをパラメータとして付加する処理
+    const separator = url.includes('?') ? '&' : '?';
+    url = url + separator + 'id=' + encodeURIComponent(sid);
+    
     recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url);
   } else {
     alert("このIDのダッシュボードはまだ準備されていません。");
