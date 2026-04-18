@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>進捗ダッシュボード — Global Lingua Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --navy:    #0c2340;
+      --blue:    #0b4f8a;
+      --accent:  #1a7fd4;
+      --gold:    #c89a2e;
+      --bg:      #f4f7fb;
+      --surface: #ffffff;
+      --border:  #dce8f4;
+      --text:    #1a2535;
+      --muted:   #5c6e82;
+      --radius:  12px;
+      --shadow:  0 2px 12px rgba(11,79,138,.09);
+      --green:   #2e7d32;
+      --green-bg:#e8f5e9;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont,
+        "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans", "Meiryo", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      padding: 0 0 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--navy);
+      padding: 28px 24px 22px;
+      position: relative; overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 90% 50%, rgba(26,127,212,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(200,154,46,.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-inner { max-width: 960px; margin: auto; position: relative; }
+    .portal-label {
+      font-weight: 500; font-size: .75rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 400; color: #fff; line-height: 1.25;
+    }
+    header h1 em { font-style: italic; color: #a8cef0; }
+    .header-sub { margin-top: 6px; font-size: .85rem; color: #8db5d8; }
+
+    .header-meta {
+      margin-top: 16px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .meta-pill {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: .8rem; color: #c8ddf0;
+    }
+    .meta-pill strong { color: #fff; }
+
+    /* ── MAIN ── */
+    main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      overflow: hidden;
+      animation: fadeUp .4s ease both;
+    }
+    .card:nth-child(1){ animation-delay:.05s; }
+    .card:nth-child(2){ animation-delay:.12s; }
+    .card:nth-child(3){ animation-delay:.19s; }
+    .card:nth-child(4){ animation-delay:.26s; }
+    .card:nth-child(5){ animation-delay:.33s; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .icon-gauge  { background: #e5f3ff; }
+    .icon-bar    { background: #fff4ce; }
+    .icon-pie    { background: #f3e8ff; }
+    .icon-log    { background: #e8f5e9; }
+
+    .card-num {
+      font-size: .68rem; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+    }
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; font-weight: 400;
+      color: var(--navy); line-height: 1.3;
+    }
+    .card-body { padding: 20px; }
+
+    /* ── SKELETON ── */
+    .skeleton {
+      background: linear-gradient(90deg, #e8eef5 25%, #f0f5fb 50%, #e8eef5 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    /* ── ERROR ── */
+    .error-box {
+      background: #fff5f5; border: 1px solid #ffcdd2;
+      border-radius: 8px; padding: 16px 20px;
+      color: #c62828; font-size: .88rem;
+      display: none;
+    }
+    .error-box.show { display: block; }
+
+    /* ── GAUGE ── */
+    .gauge-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px;
+    }
+    .gauge-svg { width: 100%; max-width: 360px; }
+
+    .gauge-track { fill: none; stroke: #e8eef5; stroke-width: 18; stroke-linecap: round; }
+    .gauge-fill  {
+      fill: none; stroke-width: 18; stroke-linecap: round;
+      transition: stroke-dashoffset 1.4s cubic-bezier(.34,1.2,.64,1);
+    }
+
+    .gauge-center { text-anchor: middle; dominant-baseline: middle; }
+    .gauge-pct  { font-family: 'DM Serif Display', serif; font-size: 2.2rem; fill: var(--navy); }
+    .gauge-sub  { font-size: .75rem; fill: var(--muted); font-family: 'DM Sans', sans-serif; }
+
+    .gauge-labels {
+      width: 100%; max-width: 360px;
+      display: flex; justify-content: space-between;
+      font-size: .72rem; color: var(--muted);
+    }
+
+    .gauge-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; width: 100%;
+    }
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 9px; padding: 12px 14px;
+      text-align: center;
+    }
+    .stat-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem; color: var(--navy); line-height: 1;
+    }
+    .stat-label { font-size: .7rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── CHARTS ── */
+    .chart-wrap { position: relative; width: 100%; height: 280px; }
+
+    /* ── LOG TABLE ── */
+    .log-table {
+      width: 100%; border-collapse: collapse; font-size: .82rem;
+    }
+    .log-table th {
+      text-align: left; padding: 8px 10px;
+      border-bottom: 2px solid var(--border);
+      font-size: .7rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .log-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #eef3f9;
+      vertical-align: middle;
+    }
+    .log-table tr:last-child td { border-bottom: none; }
+    .log-table tr:hover td { background: #f8fbff; }
+
+    .log-status {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .status-完了 { background: var(--green-bg); color: var(--green); }
+    .status-開始 { background: #e3f2fd; color: #1565c0; }
+    .status-アクセス { background: #fff9c4; color: #827717; }
+
+    .log-words {
+      font-size: .75rem; font-weight: 600;
+      color: var(--accent); white-space: nowrap;
+    }
+
+    .log-empty {
+      text-align: center; padding: 32px;
+      color: var(--muted); font-style: italic; font-size: .88rem;
+    }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .8rem; color: var(--accent);
+      text-decoration: none; margin-bottom: 20px;
+      padding: 6px 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: background .15s;
+    }
+    .back-link:hover { background: #e8f2fc; }
+
+    /* ── FOOTER ── */
+    footer { margin-top: 40px; text-align: center; font-size: .75rem; color: var(--muted); }
+    footer span { color: var(--gold); }
+
+    @media (max-width: 600px) {
+      .gauge-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat-val { font-size: 1.2rem; }
+      .log-table th:nth-child(4),
+      .log-table td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="portal-label">Global Lingua Network &nbsp;/&nbsp; Student Progress Dashboard</div>
+    <h1>学習進捗 <em>Dashboard</em></h1>
+    <p class="header-sub">100万語達成プログラム — 個人別進捗レポート</p>
+    <div class="header-meta">
+      <div class="meta-pill">Student ID: <strong id="hdr-sid">—</strong></div>
+      <div class="meta-pill" id="hdr-name">氏名: <strong>読み込み中…</strong></div>
+      <div class="meta-pill" id="hdr-updated">更新: <strong>—</strong></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <a class="back-link" href="index.html" id="back-btn">← ポータルに戻る</a>
+
+  <!-- エラー表示 -->
+  <div class="error-box" id="error-box"></div>
+
+  <!-- 1. 100万語ゲージ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-gauge">🎯</div>
+      <div>
+        <div class="card-num">Goal Tracker</div>
+        <div class="card-title">100万語 達成ゲージ</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- 半円トラック: cx=120, cy=130, r=90, -180〜0deg -->
+          <!-- circumference of r=90 semicircle = π*90 ≈ 282.74 -->
+          <path class="gauge-track"
+            d="M 30,130 A 90,90 0 0,1 210,130"
+            stroke-dasharray="282.74" stroke-dashoffset="0"/>
+          <path class="gauge-fill" id="gauge-path"
+            d="M 30,130 A 90,90 0 0,1 210,130"
+            stroke="url(#gaugeGrad)"
+            stroke-dasharray="282.74"
+            stroke-dashoffset="282.74"/>
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#1a7fd4"/>
+              <stop offset="100%" stop-color="#c89a2e"/>
+            </linearGradient>
+          </defs>
+          <text class="gauge-center gauge-pct" id="gauge-pct" x="120" y="110">0%</text>
+          <text class="gauge-center gauge-sub" x="120" y="132">0 / 1,000,000 語</text>
+        </svg>
+        <div class="gauge-labels">
+          <span>0</span><span>25万</span><span>50万</span><span>75万</span><span>100万</span>
+        </div>
+        <div class="gauge-stats">
+          <div class="stat-box">
+            <div class="stat-val" id="stat-total">—</div>
+            <div class="stat-label">累計語数</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-remain">—</div>
+            <div class="stat-label">残り語数</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-daily">—</div>
+            <div class="stat-label">必要語数/日</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 週別語数グラフ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-bar">📊</div>
+      <div>
+        <div class="card-num">Weekly Progress</div>
+        <div class="card-title">週別 累計語数</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="bar-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. タスク別内訳 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-pie">🥧</div>
+      <div>
+        <div class="card-num">Task Breakdown</div>
+        <div class="card-title">タスク別 学習内訳</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap" style="height:300px">
+        <canvas id="pie-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 直近ログ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-log">📋</div>
+      <div>
+        <div class="card-num">Recent Activity</div>
+        <div class="card-title">直近の学習ログ</div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 0 8px">
+      <div id="log-container">
+        <div class="log-empty">読み込み中…</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  © Takumi Wakabayashi &nbsp;—&nbsp; <span>Global Lingua Network</span>
+</footer>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════
+//  ★ 設定: ここに Apps Script Web App URL を入力
+// ══════════════════════════════════════════════
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6tWjvnxTDaG2J2Q-ZeXwOuUQQQeOgiLTETBa52NprlKSEj-O6R-S3vst20Km4KiwjGQ/exec';
+
+var GOAL_WORDS = 1000000;
+var GOAL_DATE  = getThirdMonday(new Date().getFullYear(), 2); // 2月第3月曜
+
+// ── URL パラメータから Student ID 取得 ──
+var params = new URLSearchParams(location.search);
+var sid    = (params.get('id') || '').toUpperCase();
+
+document.getElementById('hdr-sid').textContent = sid || '（未指定）';
+
+// ── back link に id を付与 ──
+var backBtn = document.getElementById('back-btn');
+if (sid) backBtn.href = 'index.html?id=' + encodeURIComponent(sid);
+
+// ── メインロード ──
+if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
+  loadDemo();
+} else {
+  loadReal();
+}
+
+// ══════════════════════════════════════════════
+//  実データ取得
+// ══════════════════════════════════════════════
+function loadReal() {
+  var url = APPS_SCRIPT_URL + '?id=' + encodeURIComponent(sid);
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){ render(data); })
+    .catch(function(e){
+      showError('データの取得に失敗しました。Apps Script URLと公開設定を確認してください。<br>(' + e.message + ')');
+    });
+}
+
+// ══════════════════════════════════════════════
+//  デモデータ (URL 未設定時の表示確認用)
+// ══════════════════════════════════════════════
+function loadDemo() {
+  var demoData = {
+    name: 'デモ 太郎',
+    total: 312450,
+    weeks: {
+      labels: ['4/1週','4/2週','4/3週','4/4週','5/1週','5/2週','5/3週','5/4週'],
+      values: [28000, 34500, 31200, 29800, 38000, 42100, 36700, 40200]
+    },
+    tasks: {
+      labels: ['VOA Article','Science News','TED Talks','News in Levels','ESL Lab','elllo','シス単例文','Vocab Master','文法プリント'],
+      values: [62000, 54000, 48000, 38000, 28000, 22000, 28000, 21000, 11450]
+    },
+    logs: [
+      { date:'2025-05-24', task:'VOA Article',         cat:'Reading',   status:'完了', words:820,  duration:18, detail:'AI and Climate' },
+      { date:'2025-05-24', task:'シス単例文付きチェックリスト', cat:'Vocab',     status:'完了', words:350,  duration:22, detail:'' },
+      { date:'2025-05-23', task:'Science News',         cat:'Reading',   status:'完了', words:900,  duration:20, detail:'Deep Sea Discovery' },
+      { date:'2025-05-23', task:'文法プリント',            cat:'Grammar',   status:'完了', words:600,  duration:30, detail:'' },
+      { date:'2025-05-22', task:'TED Talks',            cat:'Listening', status:'完了', words:1200, duration:25, detail:'The Power of Habit' },
+      { date:'2025-05-22', task:'elllo',                cat:'Listening', status:'完了', words:500,  duration:15, detail:'Episode 214' },
+      { date:'2025-05-21', task:'Vocab Master',         cat:'Vocab',     status:'完了', words:300,  duration:20, detail:'' },
+      { date:'2025-05-21', task:'News in Levels',       cat:'Reading',   status:'完了', words:600,  duration:14, detail:'Space Tourism' },
+      { date:'2025-05-20', task:'VOA Article',          cat:'Reading',   status:'完了', words:820,  duration:17, detail:'Economy Report' },
+      { date:'2025-05-20', task:'ESL Lab',              cat:'Listening', status:'完了', words:700,  duration:20, detail:'' }
+    ],
+    updated: '2025-05-24 09:15'
+  };
+  // デモ注記
+  showError('⚠️ デモモード表示中 — <code>APPS_SCRIPT_URL</code> を設定すると実データが表示されます。', 'warn');
+  render(demoData);
+}
+
+// ══════════════════════════════════════════════
+//  レンダリング
+// ══════════════════════════════════════════════
+function render(data) {
+  // ヘッダー更新
+  document.getElementById('hdr-name').innerHTML    = '氏名: <strong>' + (data.name || sid) + '</strong>';
+  document.getElementById('hdr-updated').innerHTML = '更新: <strong>' + (data.updated || '—') + '</strong>';
+
+  renderGauge(data.total || 0);
+  renderBar(data.weeks   || { labels:[], values:[] });
+  renderPie(data.tasks   || { labels:[], values:[] });
+  renderLog(data.logs    || []);
+}
+
+// ── ゲージ ──
+function renderGauge(total) {
+  var pct        = Math.min(total / GOAL_WORDS, 1);
+  var circumf    = 282.74;
+  var offset     = circumf * (1 - pct);
+  var daysLeft   = Math.max(1, Math.ceil((GOAL_DATE - new Date()) / 86400000));
+  var remain     = Math.max(0, GOAL_WORDS - total);
+  var dailyNeed  = remain > 0 ? Math.ceil(remain / daysLeft) : 0;
+
+  // アニメーション
+  setTimeout(function() {
+    document.getElementById('gauge-path').style.strokeDashoffset = offset;
+    // SVG テキスト更新
+    var pctEl = document.getElementById('gauge-pct');
+    pctEl.parentNode.querySelector('text:last-of-type').textContent =
+      fmtNum(total) + ' / 1,000,000 語';
+    animateCount(pctEl, 0, Math.round(pct * 100), 1400, function(v){ return v + '%'; });
+  }, 100);
+
+  animateCountEl('stat-total',  0, total,     1400, function(v){ return fmtNum(Math.round(v)); });
+  animateCountEl('stat-remain', 0, remain,    1400, function(v){ return fmtNum(Math.round(v)); });
+  animateCountEl('stat-daily',  0, dailyNeed, 1400, function(v){ return fmtNum(Math.round(v)); });
+}
+
+// ── 棒グラフ ──
+function renderBar(weeks) {
+  var ctx = document.getElementById('bar-chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: weeks.labels,
+      datasets: [{
+        label: '語数',
+        data:  weeks.values,
+        backgroundColor: 'rgba(26,127,212,.75)',
+        borderColor:     'rgba(11,79,138,.9)',
+        borderWidth: 1,
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ' ' + fmtNum(ctx.parsed.y) + ' 語'; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#5c6e82' }
+        },
+        y: {
+          grid: { color: '#eef3f9' },
+          ticks: {
+            font: { family: 'DM Sans', size: 11 }, color: '#5c6e82',
+            callback: function(v){ return fmtNum(v); }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── 円グラフ ──
+function renderPie(tasks) {
+  var colors = [
+    '#1a7fd4','#c89a2e','#2e7d32','#8e24aa','#e53935',
+    '#0097a7','#f57c00','#5c6bc0','#43a047'
+  ];
+  var ctx = document.getElementById('pie-chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: tasks.labels,
+      datasets: [{
+        data:            tasks.values,
+        backgroundColor: colors.slice(0, tasks.labels.length),
+        borderColor:     '#ffffff',
+        borderWidth:     3,
+        hoverOffset:     8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '55%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { family: 'DM Sans', size: 12 },
+            color: '#1a2535',
+            padding: 14,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var total = ctx.dataset.data.reduce(function(a,b){ return a+b; }, 0);
+              var pct   = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
+              return ' ' + fmtNum(ctx.parsed) + ' 語 (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── ログテーブル ──
+function renderLog(logs) {
+  var container = document.getElementById('log-container');
+  if (!logs || logs.length === 0) {
+    container.innerHTML = '<div class="log-empty">ログデータがありません</div>';
+    return;
+  }
+
+  var html = '<table class="log-table">'
+    + '<thead><tr>'
+    + '<th>日付</th>'
+    + '<th>タスク</th>'
+    + '<th>状態</th>'
+    + '<th>語数</th>'
+    + '<th>時間</th>'
+    + '</tr></thead>'
+    + '<tbody>';
+
+  for (var i = 0; i < logs.length; i++) {
+    var log = logs[i];
+    var statusClass = 'status-' + (log.status || '完了');
+    var wordsStr    = log.words > 0 ? fmtNum(log.words) + ' 語' : '—';
+    var durStr      = log.duration > 0 ? log.duration + ' 分' : '—';
+    var detailStr   = log.detail ? '<br><span style="font-size:.7rem;color:#8db5d8">' + escHtml(log.detail) + '</span>' : '';
+
+    html += '<tr>'
+      + '<td style="white-space:nowrap;color:' + 'var(--muted)">' + escHtml(log.date || '') + '</td>'
+      + '<td><strong>' + escHtml(log.task || '') + '</strong>' + detailStr + '</td>'
+      + '<td><span class="log-status ' + statusClass + '">' + escHtml(log.status || '') + '</span></td>'
+      + '<td class="log-words">' + wordsStr + '</td>'
+      + '<td style="color:var(--muted);font-size:.78rem">' + durStr + '</td>'
+      + '</tr>';
+  }
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+//  ユーティリティ
+// ══════════════════════════════════════════════
+function fmtNum(n) {
+  return Number(n).toLocaleString('ja-JP');
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function animateCount(el, from, to, duration, fmt) {
+  var start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    var prog = Math.min((ts - start) / duration, 1);
+    var ease = 1 - Math.pow(1 - prog, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * ease));
+    if (prog < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function animateCountEl(id, from, to, duration, fmt) {
+  animateCount(document.getElementById(id), from, to, duration, fmt);
+}
+
+function getThirdMonday(year, month) {
+  // month: 1-indexed
+  var d = new Date(year, month - 1, 1);
+  var day = d.getDay(); // 0=Sun
+  var daysToMon = (8 - day) % 7 || 7;
+  d.setDate(1 + daysToMon + 7); // 第3月曜
+  return d;
+}
+
+function showError(msg, type) {
+  var box = document.getElementById('error-box');
+  box.innerHTML = msg;
+  box.style.display = 'block';
+  if (type === 'warn') {
+    box.style.background = '#fffde7';
+    box.style.borderColor = '#ffe082';
+    box.style.color = '#7a5c00';
+  }
+}
+</script>
+
+</body>
+</html>
