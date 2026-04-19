@@ -510,7 +510,6 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'シス単例文付きチェックリスト', 'https://globallinguanetwork.github.io/systematic_vocaburary_list/')">▶ 開始</button>
-              <!-- ここを true に変更 -->
               <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 350, true)" disabled>■ 完了記録</button>
             </div>
           </div>
@@ -527,7 +526,6 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'Vocab Master', 'https://globallinguanetwork.github.io/voc-app-v1.1/')">▶ 開始</button>
-              <!-- ここを true に変更 -->
               <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 300, true)" disabled>■ 完了記録</button>
             </div>
           </div>
@@ -544,7 +542,6 @@ footer span { color: var(--gold); }
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Grammar', '文法プリント', 'https://globallinguanetwork.github.io/grammar_apps/')">▶ 開始</button>
-              <!-- ここを true に変更 -->
               <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 600, true)" disabled>■ 完了記録</button>
             </div>
           </div>
@@ -570,11 +567,20 @@ footer span { color: var(--gold); }
           <span class="mat-btn-name">自宅学習の進捗確認</span>
           <span class="mat-btn-meta">累計語数・グラフ表示</span>
         </button>
-        <button class="mat-btn" onclick="recordActivity(this,'Portal','OneDrive資料',0, 'https://onedrive.live.com/')">
+
+        <!-- ★ ここを変更しました ★ -->
+        <button class="mat-btn" onclick="openOneDrive(this)">
           <span class="send-badge">✓ 開きました</span>
           <span class="mat-btn-icon">☁️</span>
           <span class="mat-btn-name">OneDrive 資料</span>
           <span class="mat-btn-meta">個別フォルダ・添削資料</span>
+        </button>
+
+        <button class="mat-btn" onclick="recordActivity(this,'Portal','成績管理データ',0, 'scores.html')">
+          <span class="send-badge">✓ 開きました</span>
+          <span class="mat-btn-icon">📝</span>
+          <span class="mat-btn-name">成績管理データ</span>
+          <span class="mat-btn-meta">定期テスト・模試の記録</span>
         </button>
       </div>
     </div>
@@ -654,6 +660,39 @@ const DASHBOARD_LINKS = {
   "RI4BB":  "dashboard.html"
 };
 
+// ★ ここにOneDriveのリンク一覧を追加しました ★
+const ONEDRIVE_LINKS = {
+  "A001":   "",
+  "122KQE": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAUVeKq5rZjTb14Fl-dUU0uAcJu4bM5Z8lkiDZc3gXNnDM",
+  "H66TO":  "", // 元のリストが空欄でした
+  "13W9RT": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAz_JpPGFV9SJTnYCBNA1KSAXD7fhYiPzPkz3U5Bir-ciQ",
+  "663UQ":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgD5wzSVS_A9RZyFapkAnRQrAemAAbOzrTuWgjpoW9ddXx4",
+  "1EWQKV": "https://1drv.ms/f/c/8bdf332a57ea179e/IgB3gxekeAQ0Q6TSUwFpBaOTAb_Iv_6sd3J8RgS2XZsIRuk",
+  "AUF7E":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgBVRbqoBHdlTJHEToGKdk8zAe_lG-Gpp9SSk2q-ySq5ZT8",
+  "1BYLPQ": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAZAMNgtQj3TaMT0ZLVaE67AWTIDnYAoxJJSFCdtUtBkuE",
+  "1GL6OE": "https://1drv.ms/f/c/8bdf332a57ea179e/IgBW6EAVa6zXRoAkIdemCZe8AUXkE0oNmQOCTZMYffpBpVk",
+  "UYVCP":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgD-tUKjFsawT6LXMWhBS1omAW6ItCnLfs6NfVR589lIvow",
+  "1MXH6R": "https://1drv.ms/f/c/8bdf332a57ea179e/IgBiVvWHng_mTLdFDM1tDmv6Ab6nLbIPCRA4O3ysu7IL9lo",
+  "1GNF1J": "https://1drv.ms/f/c/8bdf332a57ea179e/IgCAnCqpYHfKQLmeHZi4SzF_AUGaKtsWlm4iU8VJ2e3IGKs",
+  "RU9BI":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgB_iQqeyP1OTJQVbL5SECLzAWQdTy5m-bPOSQ1umy4MbNk",
+  "8NCIX":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgDuGpdF5nYZT6eaH61x9EOnAXHi8Ekzm3c2lJh8-ySJOfA",
+  "1DFCFC": "https://1drv.ms/f/c/8bdf332a57ea179e/UgCeF-pXKjPfIICLcXQAAAAAALvlrEXU069Doc8",
+  "1D3R6Q": "https://1drv.ms/f/c/8bdf332a57ea179e/IgDHrGvNYUL0SZP5g8kfeF06AQJ6rOSUF8qdX7kAZXEoI9E",
+  "17OVDS": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAjqq4zsjvLT6lY0eT2P7PSAdbDByrtz0Pa04IDzq9ujc4",
+  "1CK4D7": "https://1drv.ms/f/c/8bdf332a57ea179e/UgCeF-pXKjPfIICLcnQAAAAAAKdNdnwSpF6xg8c",
+  "ZSZ8M":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgDdZKaRH7qBTbON7QJAOrXRAXuNzDg-NQxOfilk65g0bcA",
+  "ED1UR":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgAXTeggcUIhR4p_ESl8_UrwAbHu0tlHvXKCHPugRTgLv0g",
+  "D3772":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgA11KpxB--bRaSyC0Ds4LbvARmvSnVvsoQ0r_ci-vyb6uk",
+  "17QVBZ": "https://1drv.ms/f/c/8bdf332a57ea179e/IgCesJ5mvh2rRI1eOu0UGr4AAQCbSblKaXvqJzfSSxcogX0",
+  "GAAFK":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgDnUJ-_ixdARpVcMjBbnyzLAYH7XztPznF4fYxwYgDj7N4",
+  "18IJ8I": "https://1drv.ms/f/c/8bdf332a57ea179e/IgCsmhauWdeOTLNFhVyRZN2YAVov_5IIdJgJrV340k_3-5U",
+  "9J5KC":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgDirI5wEVymQ4FkLH2ZmrT8AY1i71RhjaquQzIGt-3b4t4",
+  "1HVNJ9": "https://1drv.ms/f/c/8bdf332a57ea179e/IgBaU2GvoP16TLDiVaq2-WhAAQogu3ZcqeGvhVyTHZ-pLgs",
+  "WX2VZ":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgBkj2j5JlcTQ52KhM71N2MXAbCcjaRAp5dDXCSoO0WCHbE",
+  "1AFDK5": "https://1drv.ms/f/c/8bdf332a57ea179e/IgDY1mh0C9okSJkPpofMJVkmAVNKn_7dAUrPTUFquNCK9_Y",
+  "RI4BB":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgCEE16nhwZWTbrDDaasUyVVAVJ_4WbNv0Hb6J_RAhSZcos"
+};
+
 function validateId() {
   const input = document.getElementById('sid');
   const val = input.value.trim().toUpperCase();
@@ -695,8 +734,7 @@ function hiddenPost(data){
   form.target = iframeName;
 
   const payload = {
-    [FIELD.id]:       data.id,[FIELD.date]:     new Date().toLocaleDateString('ja-JP'),
-    [FIELD.cat]:      data.cat,[FIELD.status]:   data.status,
+    [FIELD.id]:       data.id,[FIELD.date]:     new Date().toLocaleDateString('ja-JP'),[FIELD.cat]:      data.cat,[FIELD.status]:   data.status,
     [FIELD.task]:     data.task,[FIELD.detail]:   data.detail || '',
     [FIELD.duration]: data.duration || 0,[FIELD.words]:    data.words || 0
   };
@@ -940,6 +978,25 @@ function openDashboard(btn) {
     recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url);
   } else {
     alert("このIDのダッシュボードはまだ準備されていません。");
+  }
+}
+
+// ★ ここにOneDrive専用の関数を追加しました ★
+function openOneDrive(btn) {
+  const sid = document.getElementById('sid').value.toUpperCase();
+  if(!VALID_IDS.includes(sid)) {
+    alert("有効な Student ID を入力してください。");
+    document.getElementById('sid').focus();
+    return;
+  }
+  
+  const url = ONEDRIVE_LINKS[sid];
+  
+  if (url && url !== "") {
+    // アクセスをGoogleフォームに記録しつつ、OneDriveのリンクを開く
+    recordActivity(btn, 'Portal', 'OneDrive資料', 0, url);
+  } else {
+    alert("このIDのOneDriveフォルダはまだ準備されていません。");
   }
 }
 </script>
