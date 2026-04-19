@@ -789,4 +789,7 @@ function submitBulk(type) {
   if (cnt > 0) { saveData(); updateAll(type); showToast('✅ ' + cnt + ' 件を一括登録しました'); }
   cancelBulk(type);
 }
-function cancelBulk(type) { document.getElementById('ocr-bulk-'+type).style.display = 'none'; window.currentBulkData[type] =
+
+function cancelBulk(type) { 
+  document.getElementById('ocr-bulk-'+type).style.display = 'none'; 
+  window.currentBulkData[type] =
