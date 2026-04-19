@@ -795,6 +795,24 @@ footer span { color: var(--gold); }
 <script>
 'use strict';
 
+// ── データストア ──
+var DATA = { teiki: [], moshi:[] };
+var CHARTS = {};
+var ACTIVE_FILTERS = { teiki: null, moshi: null };
+var CUSTOM_MODE = { teiki: false, moshi: false };
+
+// ★ IDの引き継ぎ：URLパラメータからIDを取得し、戻るボタンに付与
+(function setupSid() {
+  var params = new URLSearchParams(location.search);
+  var sid = params.get('id');
+  if (sid) {
+    var backBtn = document.querySelector('.back-link');
+    if (backBtn) {
+      backBtn.href = 'index.html?id=' + encodeURIComponent(sid);
+    }
+  }
+})();
+
 // ════════════════════════════════════════════════════
 //  科目マスタ（文部科学省 学習指導要領準拠）
 // ════════════════════════════════════════════════════
@@ -828,10 +846,10 @@ var SUBJECTS = {
     'コミュニケーション英語I', 'コミュニケーション英語II', 'コミュニケーション英語III'
   ],
   '家庭':['家庭基礎', '家庭総合'],
-  '情報': ['情報I', '情報II'],
+  '情報':['情報I', '情報II'],
   '理科（中学）': ['理科'],
   '社会（中学）': ['地理', '歴史', '公民'],
-  '実技（中学）': ['技術・家庭', '音楽', '美術', '保健体育']
+  '実技（中学）':['技術・家庭', '音楽', '美術', '保健体育']
 };
 
 // ── グラフカラーパレット ──
@@ -840,12 +858,6 @@ var COLORS =[
   '#0097a7','#f57c00','#5c6bc0','#43a047','#795548',
   '#00838f','#ad1457'
 ];
-
-// ── データストア ──
-var DATA = { teiki: [], moshi:[] };
-var CHARTS = {};
-var ACTIVE_FILTERS = { teiki: null, moshi: null };
-var CUSTOM_MODE = { teiki: false, moshi: false };
 
 // ── 初期化 ──
 (function init() {
@@ -862,7 +874,7 @@ function loadData() {
     var saved = localStorage.getItem('gln_scores');
     if (saved) DATA = JSON.parse(saved);
     if (!DATA.teiki) DATA.teiki =[];
-    if (!DATA.moshi) DATA.moshi = [];
+    if (!DATA.moshi) DATA.moshi =[];
   } catch(e) { DATA = { teiki:[], moshi:[] }; }
 }
 
@@ -871,7 +883,7 @@ function saveData() {
 }
 
 function buildSubjectSelects() {
-  var types = ['teiki', 'moshi'];
+  var types =['teiki', 'moshi'];
   types.forEach(function(type) {
     var sel = document.getElementById(type + '-subject-sel');
     sel.innerHTML = '<option value="">科目を選択</option>';
@@ -904,8 +916,7 @@ function setDefaultDates() {
 // ════════════════════════════════════════════════════
 //  タブ切り替え
 // ════════════════════════════════════════════════════
-function switchTab(name) {
-  ['teiki','moshi'].forEach(function(t) {
+function switchTab(name) {['teiki','moshi'].forEach(function(t) {
     document.getElementById('panel-' + t).classList.remove('active');
     document.getElementById('tab-' + t).classList.remove('active');
   });
@@ -1703,9 +1714,7 @@ function detectSubject(text) {
     }
   }
   // 簡易マッピング（OCRが崩れた場合のフォールバック）
-  var quick = [[/英語|英[Ee]nglish|[Ee]ng/i, '英語コミュニケーションI'],[/国語|現代の国語|国[Ll]ang/i, '現代の国語'],
-    [/数[学II]{1,3}|[Mm]ath/i, '数学I'],
-    [/物[理理]/i, '物理基礎'],
+  var quick = [[/英語|英[Ee]nglish|[Ee]ng/i, '英語コミュニケーションI'],[/国語|現代の国語|国[Ll]ang/i, '現代の国語'],[/数[学II]{1,3}|[Mm]ath/i, '数学I'],[/物[理理]/i, '物理基礎'],
     [/化[学学]/i, '化学基礎'],[/生[物物]/i, '生物基礎'],
     [/地[学学]/i, '地学基礎'],
     [/歴[史史]/i, '歴史総合'],

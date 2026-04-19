@@ -411,12 +411,12 @@ footer span { color: var(--gold); }
               <div class="mat-item-info">
                 <div class="mat-item-name">Science News</div>
                 <div class="mat-item-meta">二次・準1レベル</div>
-                <div class="mat-item-words">≈ 900 語</div>
+                <div class="mat-item-words">≈ 1600 語</div>
               </div>
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'Science News', 'https://www.sciencenewsforstudents.org/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'Science News', 900, true)" disabled>■ 完了記録</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'Science News', 1600, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -427,12 +427,12 @@ footer span { color: var(--gold); }
               <div class="mat-item-info">
                 <div class="mat-item-name">TED Talks</div>
                 <div class="mat-item-meta">上級者向け</div>
-                <div class="mat-item-words">≈ 1,200 語</div>
+                <div class="mat-item-words">≈ 2500 語</div>
               </div>
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Reading', 'TED Talks', 'https://www.ted.com/talks')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'TED Talks', 1200, true)" disabled>■ 完了記録</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Reading', 'TED Talks', 2500, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -505,12 +505,12 @@ footer span { color: var(--gold); }
               <div class="mat-item-info">
                 <div class="mat-item-name">シス単例文リスト</div>
                 <div class="mat-item-meta">スマホ最適化版</div>
-                <div class="mat-item-words">≈ 350 語</div>
+                <div class="mat-item-words">≈ 1,200 語</div>
               </div>
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'シス単例文付きチェックリスト', 'https://globallinguanetwork.github.io/systematic_vocaburary_list/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 350, true)" disabled>■ 完了記録</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'シス単例文付きチェックリスト', 1200, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -521,12 +521,12 @@ footer span { color: var(--gold); }
               <div class="mat-item-info">
                 <div class="mat-item-name">Vocab Master</div>
                 <div class="mat-item-meta">単語帳 + Target</div>
-                <div class="mat-item-words">≈ 300 語</div>
+                <div class="mat-item-words">≈ 600 語</div>
               </div>
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Vocab', 'Vocab Master', 'https://globallinguanetwork.github.io/voc-app-v1.1/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 300, true)" disabled>■ 完了記録</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Vocab', 'Vocab Master', 600, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -537,12 +537,12 @@ footer span { color: var(--gold); }
               <div class="mat-item-info">
                 <div class="mat-item-name">文法プリント</div>
                 <div class="mat-item-meta">スマホ最適化版</div>
-                <div class="mat-item-words">≈ 600 語</div>
+                <div class="mat-item-words">≈ 1200 語</div>
               </div>
             </div>
             <div class="mat-item-actions">
               <button class="btn-task btn-start" onclick="startTask(this, 'Grammar', '文法プリント', 'https://globallinguanetwork.github.io/grammar_apps/')">▶ 開始</button>
-              <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 600, true)" disabled>■ 完了記録</button>
+              <button class="btn-task btn-end" onclick="endTask(this, 'Grammar', '文法プリント', 1200, true)" disabled>■ 完了記録</button>
             </div>
           </div>
 
@@ -568,7 +568,6 @@ footer span { color: var(--gold); }
           <span class="mat-btn-meta">累計語数・グラフ表示</span>
         </button>
 
-        <!-- ★ ここを変更しました ★ -->
         <button class="mat-btn" onclick="openOneDrive(this)">
           <span class="send-badge">✓ 開きました</span>
           <span class="mat-btn-icon">☁️</span>
@@ -616,6 +615,46 @@ footer span { color: var(--gold); }
 
 const VALID_IDS =["A001","122KQE","H66TO","13W9RT","663UQ","1EWQKV","AUF7E","1BYLPQ","1GL6OE","UYVCP","1MXH6R","1GNF1J","RU9BI","8NCIX","1DFCFC","1D3R6Q","17OVDS","1CK4D7","ZSZ8M","ED1UR","D3772","17QVBZ","GAAFK","18IJ8I","9J5KC","1HVNJ9","WX2VZ","1AFDK5","RI4BB"];
 
+// ★ 管理者IDの設定
+const ADMIN_IDS = ["ADMINTAKUMI"];
+
+// ★ 管理者判定関数
+function isAdmin() {
+  const sid = document.getElementById('sid').value.toUpperCase();
+  return ADMIN_IDS.includes(sid);
+}
+
+function validateId() {
+  const input = document.getElementById('sid');
+  const val = input.value.trim().toUpperCase();
+  input.value = val;
+  
+  // ★ 管理者IDも有効とする
+  const isValid = VALID_IDS.includes(val) || ADMIN_IDS.includes(val);
+  
+  input.classList.toggle('is-valid', isValid);
+  input.classList.toggle('is-invalid', !isValid && val.length > 0);
+  
+  // ★ 管理者の場合、ヘッダーにバッジを表示
+  const header = document.querySelector('.header-sub');
+  if (header) {
+    let badge = header.querySelector('.admin-badge');
+    if (ADMIN_IDS.includes(val)) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'admin-badge';
+        badge.style.cssText = 'display:inline-block;background:#ff6b6b;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.7rem;margin-left:10px;font-weight:600;';
+        badge.textContent = '👤 管理者モード';
+        header.appendChild(badge);
+      }
+    } else {
+      if (badge) badge.remove();
+    }
+  }
+  
+  return isValid;
+}
+
 const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSeMn9RxfEnjXHvOxkfGa76WMjNik-Dmtqqi3JVkJhdVk1Of4w/formResponse';
 const FIELD = {
   id:       'entry.1051903479',
@@ -660,11 +699,10 @@ const DASHBOARD_LINKS = {
   "RI4BB":  "dashboard.html"
 };
 
-// ★ ここにOneDriveのリンク一覧を追加しました ★
 const ONEDRIVE_LINKS = {
   "A001":   "",
   "122KQE": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAUVeKq5rZjTb14Fl-dUU0uAcJu4bM5Z8lkiDZc3gXNnDM",
-  "H66TO":  "", // 元のリストが空欄でした
+  "H66TO":  "", 
   "13W9RT": "https://1drv.ms/f/c/8bdf332a57ea179e/IgAz_JpPGFV9SJTnYCBNA1KSAXD7fhYiPzPkz3U5Bir-ciQ",
   "663UQ":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgD5wzSVS_A9RZyFapkAnRQrAemAAbOzrTuWgjpoW9ddXx4",
   "1EWQKV": "https://1drv.ms/f/c/8bdf332a57ea179e/IgB3gxekeAQ0Q6TSUwFpBaOTAb_Iv_6sd3J8RgS2XZsIRuk",
@@ -693,16 +731,6 @@ const ONEDRIVE_LINKS = {
   "RI4BB":  "https://1drv.ms/f/c/8bdf332a57ea179e/IgCEE16nhwZWTbrDDaasUyVVAVJ_4WbNv0Hb6J_RAhSZcos"
 };
 
-function validateId() {
-  const input = document.getElementById('sid');
-  const val = input.value.trim().toUpperCase();
-  input.value = val;
-  const isValid = VALID_IDS.includes(val);
-  input.classList.toggle('is-valid', isValid);
-  input.classList.toggle('is-invalid', !isValid && val.length > 0);
-  return isValid;
-}
-
 (function(){
   const urlId = new URLSearchParams(location.search).get('id');
   if(urlId) { document.getElementById('sid').value = urlId.toUpperCase(); validateId(); }
@@ -722,6 +750,12 @@ function saveTaskState() {
 }
 
 function hiddenPost(data){
+  // ★ 管理者モードの場合、Googleフォームへの送信をスキップ
+  if (isAdmin()) {
+    console.log('[管理者モード] 送信スキップ:', data);
+    return false;
+  }
+
   const iframeName = 'hidden_iframe_' + Date.now();
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
@@ -733,9 +767,7 @@ function hiddenPost(data){
   form.method = 'POST';
   form.target = iframeName;
 
-  const payload = {
-    [FIELD.id]:       data.id,[FIELD.date]:     new Date().toLocaleDateString('ja-JP'),[FIELD.cat]:      data.cat,[FIELD.status]:   data.status,
-    [FIELD.task]:     data.task,[FIELD.detail]:   data.detail || '',
+  const payload = {[FIELD.id]:       data.id,[FIELD.date]:     new Date().toLocaleDateString('ja-JP'),[FIELD.cat]:      data.cat,[FIELD.status]:   data.status,[FIELD.task]:     data.task,[FIELD.detail]:   data.detail || '',
     [FIELD.duration]: data.duration || 0,[FIELD.words]:    data.words || 0
   };
 
@@ -755,14 +787,11 @@ function hiddenPost(data){
 }
 
 var POSTMSG_APPS =['シス単例文付きチェックリスト', 'Vocab Master', '文法プリント'];
-
-// 重複実行防止
 var processedTimestamps = {};
 
-// ★ 完了メッセージを一元処理する関数 ★
 function processCompleteMsg(data) {
   if (!data || data.type !== 'GLN_COMPLETE') return;
-  if (data.timestamp && processedTimestamps[data.timestamp]) return; // 重複スキップ
+  if (data.timestamp && processedTimestamps[data.timestamp]) return;
   if (data.timestamp) processedTimestamps[data.timestamp] = true;
 
   var title   = data.title   || '';
@@ -781,7 +810,6 @@ function processCompleteMsg(data) {
     saveTaskState();
   }
 
-  // UIのボタン状態を更新 (getAttributeを使用して完全に確実にマッチング)
   var items = document.querySelectorAll('.mat-item');
   for (var i = 0; i < items.length; i++) {
     var startBtn = items[i].querySelector('.btn-start');
@@ -791,7 +819,7 @@ function processCompleteMsg(data) {
       var endBtn = items[i].querySelector('.btn-end');
       if (endBtn) {
         endBtn.disabled = true;
-        endBtn.innerHTML = '■ 完了記録'; // 手動ボタンをデフォルトの表示に戻す
+        endBtn.innerHTML = '■ 完了記録';
       }
       startBtn.disabled = false;
       startBtn.innerHTML = '▶ 再開する';
@@ -806,12 +834,10 @@ function processCompleteMsg(data) {
   showToast('✅ ' + title + ' の記録を自動送信しました');
 }
 
-// ── 1. PostMessage 経由の受信 ──
 window.addEventListener('message', function(event) {
   processCompleteMsg(event.data);
 });
 
-// ── 2. LocalStorage 経由の受信 (スマホでタブが切り替わった際の強力なフォールバック) ──
 window.addEventListener('storage', function(e) {
   if (e.key === 'GLN_SYNC_PAYLOAD' && e.newValue) {
     try {
@@ -822,7 +848,6 @@ window.addEventListener('storage', function(e) {
   }
 });
 
-// ── 3. タブ復帰時にもLocalStorageをチェック ──
 window.addEventListener('focus', function() {
   try {
     var val = localStorage.getItem('GLN_SYNC_PAYLOAD');
@@ -836,7 +861,7 @@ window.addEventListener('focus', function() {
 
 function startTask(btn, cat, title, url) {
   var sid = document.getElementById('sid').value.toUpperCase();
-  if(!VALID_IDS.includes(sid)) {
+  if(!VALID_IDS.includes(sid) && !isAdmin()) {
     alert("有効な Student ID を入力してください。");
     document.getElementById('sid').focus();
     return;
@@ -852,7 +877,6 @@ function startTask(btn, cat, title, url) {
   if (!isPostMsgApp) {
     endBtn.disabled = false;
   } else {
-    // ★ 修正：iOSなどで通信が遮断された時のために「手動完了」を許可する
     endBtn.disabled = false;
     endBtn.innerHTML = '✅ 手動で完了記録'; 
   }
@@ -906,7 +930,7 @@ function endTask(btn, cat, title, words, requireInput) {
 
 function recordActivity(btn, cat, title, words, targetUrl = null){
   const sid = document.getElementById('sid').value.toUpperCase();
-  if(!VALID_IDS.includes(sid)) {
+  if(!VALID_IDS.includes(sid) && !isAdmin()) {
     alert("有効な Student ID を入力してください。");
     document.getElementById('sid').focus();
     return;
@@ -922,7 +946,9 @@ function recordActivity(btn, cat, title, words, targetUrl = null){
   showToast('✅ ' + title + ' の記録を送信しました');
 
   if(targetUrl && targetUrl !== "") {
-    window.open(targetUrl, '_blank');
+    // 【修正】 URLに id パラメータを付与する
+    const separator = targetUrl.includes('?') ? '&' : '?';
+    window.open(targetUrl + separator + 'id=' + encodeURIComponent(sid), '_blank');
   }
 }
 
@@ -962,29 +988,47 @@ function showToast(msg) {
   }, 3500);
 }
 
+// ★ 管理者機能を追加した openDashboard
 function openDashboard(btn) {
   const sid = document.getElementById('sid').value.toUpperCase();
-  if(!VALID_IDS.includes(sid)) {
+  
+  // 管理者の場合、監視する生徒IDを入力
+  if (isAdmin()) {
+    const targetId = prompt('監視する生徒のIDを入力:', '');
+    if (!targetId) return;
+    const cleanId = targetId.trim().toUpperCase();
+    
+    if (!VALID_IDS.includes(cleanId)) {
+      alert('無効なIDです');
+      return;
+    }
+    
+    const url = 'dashboard.html?id=' + encodeURIComponent(cleanId);
+    window.open(url, '_blank');
+    showToast('📊 ' + cleanId + ' のダッシュボードを開きました');
+    return;
+  }
+  
+  // 通常モード
+  if (!VALID_IDS.includes(sid)) {
     alert("有効な Student ID を入力してください。");
     document.getElementById('sid').focus();
     return;
   }
+  
   let url = DASHBOARD_LINKS[sid];
   if (url && url !== "") {
-    // URLにStudent IDをパラメータとして付加する処理
     const separator = url.includes('?') ? '&' : '?';
     url = url + separator + 'id=' + encodeURIComponent(sid);
-    
     recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url);
   } else {
     alert("このIDのダッシュボードはまだ準備されていません。");
   }
 }
 
-// ★ ここにOneDrive専用の関数を追加しました ★
 function openOneDrive(btn) {
   const sid = document.getElementById('sid').value.toUpperCase();
-  if(!VALID_IDS.includes(sid)) {
+  if(!VALID_IDS.includes(sid) && !isAdmin()) {
     alert("有効な Student ID を入力してください。");
     document.getElementById('sid').focus();
     return;
@@ -993,7 +1037,6 @@ function openOneDrive(btn) {
   const url = ONEDRIVE_LINKS[sid];
   
   if (url && url !== "") {
-    // アクセスをGoogleフォームに記録しつつ、OneDriveのリンクを開く
     recordActivity(btn, 'Portal', 'OneDrive資料', 0, url);
   } else {
     alert("このIDのOneDriveフォルダはまだ準備されていません。");
