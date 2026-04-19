@@ -2,290 +2,2678 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>成績記録ツール — GLN</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>成績記録ツール — Global Lingua Network</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 <style>
-:root{--navy:#0c2340;--blue:#0b4f8a;--accent:#1a7fd4;--gold:#c89a2e;--bg:#f4f7fb;--surface:#ffffff;--border:#dce8f4;--text:#1a2535;--muted:#5c6e82;--radius:12px;--shadow:0 2px 12px rgba(11,79,138,.09);}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:'DM Sans',"Hiragino Kaku Gothic ProN",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:80px;}
-header{background:var(--navy);padding:24px 20px;color:#fff;}
-header h1{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;}
-header h1 em{font-style:italic;color:#a8cef0;}
-.portal-label{font-size:0.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;}
-.tab-nav{background:var(--navy);display:flex;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.1);}
-.tab-btn{padding:12px 18px;font-size:0.85rem;color:#8db5d8;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;}
-.tab-btn.active{color:#fff;border-bottom-color:var(--gold);}
-main{max-width:960px;margin:20px auto;padding:0 16px;}
-.tab-panel{display:none;animation:fadeIn 0.3s;}
-.tab-panel.active{display:block;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
-.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.card-title{font-family:'DM Serif Display',serif;font-size:1rem;}
-.card-body{padding:18px;}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:15px;}
-.form-group{display:flex;flex-direction:column;gap:4px;}
-.form-label{font-size:0.75rem;font-weight:700;color:var(--accent);}
-.form-input,.form-select{padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:0.9rem;}
-.subject-row{display:flex;gap:5px;}
-.btn-primary{flex:1;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
-.btn-gold{background:var(--gold);}
-.btn-secondary{padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:0.8rem;cursor:pointer;}
-.table-responsive{overflow-x:auto;}
-.data-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
-.data-table th{text-align:left;padding:10px;border-bottom:2px solid var(--border);color:var(--muted);}
-.data-table td{padding:10px;border-bottom:1px solid #eee;}
-.score-pct{font-weight:700;padding:2px 6px;border-radius:4px;background:#e8f5e9;color:#2e7d32;}
-.ocr-area{display:block;border:2px dashed var(--accent);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:#f8fbff;margin-bottom:15px;}
-.ocr-preview{max-width:100%;max-height:200px;display:none;margin:10px auto;border-radius:5px;}
-.ocr-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;z-index:1000;}
-.spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.stats-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:20px;}
-.stat-card{background:#fff;padding:10px;border-radius:10px;text-align:center;border:1px solid var(--border);}
-.stat-val{font-size:1.2rem;font-weight:700;color:var(--navy);}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 20px;border-radius:20px;opacity:0;transition:0.3s;z-index:2000;pointer-events:none;}
-#toast.show{opacity:1;}
+:root {
+  --navy:    #0c2340;
+  --blue:    #0b4f8a;
+  --accent:  #1a7fd4;
+  --gold:    #c89a2e;
+  --teal:    #0097a7;
+  --rose:    #c0392b;
+  --bg:      #f4f7fb;
+  --surface: #ffffff;
+  --border:  #dce8f4;
+  --text:    #1a2535;
+  --muted:   #5c6e82;
+  --radius:  12px;
+  --shadow:  0 2px 12px rgba(11,79,138,.09);
+  --green:   #2e7d32;
+  --green-bg:#e8f5e9;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.75; padding: 0 0 80px;
+}
+input, select, button, textarea { font-family: inherit; appearance: none; -webkit-appearance: none; }
+
+/* ── HEADER ── */
+header {
+  background: var(--navy); padding: 28px 24px 22px;
+  position: relative; overflow: hidden;
+}
+header::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 90% 50%, rgba(26,127,212,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(200,154,46,.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-inner { max-width: 960px; margin: auto; position: relative; }
+.portal-label {
+  font-weight: 500; font-size: .75rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 400; color: #fff; line-height: 1.25;
+}
+header h1 em { font-style: italic; color: #a8cef0; }
+.header-sub { margin-top: 6px; font-size: .85rem; color: #8db5d8; }
+.header-meta { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.meta-pill {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16);
+  border-radius: 6px; padding: 4px 12px; font-size: .8rem; color: #c8ddf0;
+}
+.meta-pill strong { color: #fff; }
+
+/* ── TAB NAV ── */
+.tab-nav {
+  background: var(--navy); border-bottom: 1px solid rgba(255,255,255,.1);
+  padding: 0 24px; display: flex;
+}
+.tab-nav-inner { max-width: 960px; margin: 0 auto; display: flex; }
+.tab-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 13px 22px; font-family: 'DM Sans', sans-serif;
+  font-size: .85rem; font-weight: 500; color: #8db5d8;
+  background: none; border: none; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color .18s, border-color .18s;
+  white-space: nowrap; touch-action: manipulation;
+}
+.tab-btn:hover { color: #c8ddf0; }
+.tab-btn.active { color: #fff; border-bottom-color: var(--gold); }
+.tab-btn .tab-badge {
+  font-size: .65rem; font-weight: 700; padding: 1px 6px;
+  border-radius: 9px; background: rgba(200,154,46,.25); color: var(--gold);
+}
+.tab-btn.active .tab-badge { background: var(--gold); color: var(--navy); }
+
+/* ── MAIN ── */
+main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  margin-bottom: 20px; overflow: hidden;
+  animation: fadeUp .4s ease both;
+}
+.card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}
+.card:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.icon-form   { background: #e5f3ff; }
+.icon-line   { background: #fff4ce; }
+.icon-radar  { background: #f3e8ff; }
+.icon-table  { background: #e8f5e9; }
+.icon-camera { background: #fce4ec; }
+.card-num {
+  font-size: .68rem; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--muted);
+}
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem; font-weight: 400; color: var(--navy); line-height: 1.3;
+}
+.card-body { padding: 20px; }
+
+/* ── FORM GRID ── */
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px; margin-bottom: 18px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-size: .72rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent);
+}
+.form-input, .form-select {
+  padding: 9px 12px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: .9rem; color: var(--text);
+  transition: border-color .18s, box-shadow .18s; outline: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,127,212,.1);
+}
+.form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235c6e82' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+.subject-row { display: flex; gap: 8px; align-items: flex-end; }
+.subject-row .form-select { flex: 1; }
+.subject-toggle {
+  flex-shrink: 0; padding: 9px 11px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  font-size: .78rem; font-weight: 600; color: var(--muted); cursor: pointer;
+  transition: all .18s; white-space: nowrap;
+}
+.subject-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.form-hint { font-size: .73rem; color: var(--muted); margin-top: 2px; }
+
+/* 点数入力グループ */
+.score-group { display: flex; gap: 8px; align-items: center; }
+.score-group .form-input { flex: 1; }
+.score-sep { color: var(--muted); font-size: .85rem; white-space: nowrap; flex-shrink: 0; }
+
+/* ── BUTTONS ── */
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.btn-primary {
+  flex: 1; min-width: 130px; padding: 11px 20px;
+  background: var(--blue); color: #fff; border: none;
+  border-radius: 8px; font-size: .88rem; font-weight: 600;
+  cursor: pointer; transition: background .18s, transform .12s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  touch-action: manipulation;
+}
+.btn-primary:hover { background: var(--navy); }
+.btn-primary:active { transform: scale(.97); }
+.btn-primary.btn-gold { background: var(--gold); }
+.btn-primary.btn-gold:hover { background: #b08520; }
+.btn-secondary {
+  padding: 11px 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: .85rem; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all .18s; touch-action: manipulation;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── CHART WRAP ── */
+.chart-wrap { position: relative; width: 100%; height: 360px; }
+.chart-wrap-radar { position: relative; width: 100%; height: 360px; }
+.chart-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 200px; color: var(--muted); font-size: .88rem; font-style: italic; gap: 8px;
+}
+.chart-empty .empty-icon { font-size: 2rem; opacity: .4; }
+/* グラフ操作バー */
+.chart-controls {
+  display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px; flex-wrap: wrap;
+}
+.btn-chart-ctrl {
+  padding: 5px 12px; font-size: .75rem; font-weight: 600;
+  border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted); cursor: pointer;
+  transition: all .15s; touch-action: manipulation;
+}
+.btn-chart-ctrl:hover { border-color: var(--accent); color: var(--accent); }
+.chart-hint { font-size: .7rem; color: var(--muted); text-align: center; margin-top: 6px; }
+
+/* ── EDIT MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(12,35,64,.55);
+  z-index: 1000; display: flex; align-items: center; justify-content: center;
+  padding: 16px; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,.22); width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  transform: translateY(20px); transition: transform .2s;
+}
+.modal-overlay.open .modal-box { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+}
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--navy); }
+.modal-close {
+  width: 32px; height: 32px; border-radius: 6px; border: none;
+  background: var(--bg); color: var(--muted); font-size: 1.1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s;
+}
+.modal-close:hover { background: #ffebee; color: var(--rose); }
+.modal-body { padding: 20px; }
+.modal-footer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); justify-content: flex-end; }
+
+/* ── OCR 一括確認パネル ── */
+.ocr-bulk-panel { margin-top: 16px; border: 2px solid var(--accent); border-radius: 10px; overflow: hidden; display: none; }
+.ocr-bulk-panel.show { display: block; }
+.ocr-bulk-header {
+  background: #e5f3ff; padding: 12px 16px;
+  font-size: .85rem; font-weight: 600; color: var(--blue);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ocr-bulk-scroll { max-height: 400px; overflow-y: auto; }
+.ocr-bulk-item { border-bottom: 1px solid var(--border); padding: 14px 16px; background: var(--surface); }
+.ocr-bulk-item:last-child { border-bottom: none; }
+.ocr-bulk-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ocr-bulk-num {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
+  font-size: .75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ocr-bulk-name { font-weight: 600; font-size: .9rem; color: var(--navy); }
+.ocr-bulk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ocr-bulk-field label { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); display: block; margin-bottom: 3px; }
+.ocr-bulk-field input, .ocr-bulk-field select {
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px;
+  font-size: .85rem; font-family: inherit; background: var(--bg); color: var(--text); outline: none; box-sizing: border-box;
+  appearance: none; -webkit-appearance: none;
+}
+.ocr-bulk-field input:focus, .ocr-bulk-field select:focus { border-color: var(--accent); }
+.ocr-bulk-footer { padding: 14px 16px; background: #f8fbff; border-top: 2px solid var(--accent); display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── テスト削除バー ── */
+.exam-delete-bar {
+  background: #fff5f5; border: 1px solid #ffcdd2; border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.exam-delete-bar select {
+  flex: 1; min-width: 180px; padding: 7px 10px;
+  border: 1px solid #ffcdd2; border-radius: 6px; font-size: .85rem; font-family: inherit; background: #fff;
+  appearance: none; -webkit-appearance: none;
+}
+.btn-exam-del {
+  padding: 7px 14px; background: #ffebee; border: 1px solid #ef9a9a; border-radius: 6px;
+  font-size: .82rem; font-weight: 600; color: var(--rose); cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn-exam-del:hover { background: #ffcdd2; }
+
+/* ── 試験名ロック表示 ── */
+.exam-lock-bar {
+  background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px;
+  padding: 8px 14px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.exam-lock-info { font-size: .82rem; color: var(--green); }
+.exam-lock-info strong { color: #1b5e20; }
+.btn-exam-unlock {
+  flex-shrink: 0; font-size: .75rem; font-weight: 600; padding: 4px 10px;
+  border: 1px solid #a5d6a7; border-radius: 5px; background: var(--surface);
+  color: var(--green); cursor: pointer; transition: all .15s;
+}
+.btn-exam-unlock:hover { background: var(--green-bg); }
+
+/* テーブル編集・削除ボタン */
+.btn-edit {
+  padding: 4px 9px; background: none; border: 1px solid var(--border);
+  border-radius: 5px; color: var(--accent); font-size: .72rem; cursor: pointer;
+  transition: all .15s; margin-right: 4px;
+}
+.btn-edit:hover { background: #e5f3ff; border-color: var(--accent); }
+
+/* ── DATA TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.data-table th {
+  text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border);
+  font-size: .68rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.data-table td {
+  padding: 9px 10px; border-bottom: 1px solid #eef3f9; vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f8fbff; }
+.score-pct {
+  display: inline-block; font-size: .75rem; font-weight: 600;
+  padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+}
+.pct-s  { background: #e8f5e9; color: #2e7d32; }
+.pct-a  { background: #e3f2fd; color: #1565c0; }
+.pct-b  { background: #fff9c4; color: #827717; }
+.pct-c  { background: #fff3e0; color: #e65100; }
+.pct-d  { background: #fce4ec; color: #c62828; }
+.btn-del {
+  padding: 4px 9px; background: none; border: 1px solid #ffcdd2;
+  border-radius: 5px; color: #e57373; font-size: .72rem; cursor: pointer;
+  transition: all .15s;
+}
+.btn-del:hover { background: #ffebee; border-color: #e57373; color: var(--rose); }
+
+/* ── SUBJECT CHIPS ── */
+.subject-filter { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.chip {
+  padding: 5px 13px; border-radius: 20px; font-size: .78rem; font-weight: 500;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: all .15s; touch-action: manipulation;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── STATS ROW ── */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; text-align: center;
+}
+.stat-card-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem; color: var(--navy); line-height: 1;
+}
+.stat-card-label { font-size: .68rem; color: var(--muted); margin-top: 4px; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--navy); color: #fff; font-size: .82rem;
+  padding: 9px 22px; border-radius: 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.22);
+  opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  pointer-events: none; white-space: nowrap; z-index: 9999;
+  border: 1px solid rgba(255,255,255,.1);
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ── OCR / PHOTO ── */
+.ocr-area {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  transition: border-color .18s, background .18s;
+  background: #fafcff; position: relative;
+}
+.ocr-area:hover, .ocr-area.drag-over { border-color: var(--accent); background: #f0f8ff; }
+.ocr-area.ocr-running { border-color: var(--accent); background: #f0f8ff; cursor: default; pointer-events: none; }
+.ocr-area input { display: none; }
+.ocr-icon { font-size: 2.2rem; margin-bottom: 8px; opacity: .7; }
+.ocr-label { font-size: .88rem; color: var(--muted); }
+.ocr-label strong { color: var(--accent); }
+.ocr-hint { font-size: .73rem; color: var(--muted); margin-top: 4px; }
+
+/* プレビュー+OCRオーバーレイ */
+.ocr-preview-wrap { position: relative; margin-top: 14px; display: none; }
+.ocr-preview { max-width: 100%; border-radius: 8px; display: block; }
+.ocr-processing-overlay {
+  position: absolute; inset: 0; border-radius: 8px;
+  background: rgba(12,35,64,.72);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+}
+.ocr-processing-overlay.hide { display: none; }
+.ocr-spinner {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 4px solid rgba(255,255,255,.2);
+  border-top-color: var(--gold);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ocr-processing-label { font-size: .85rem; color: #fff; font-weight: 500; }
+
+/* プログレスバー */
+.ocr-progress-wrap { margin-top: 12px; display: none; }
+.ocr-progress-wrap.show { display: block; }
+.ocr-progress-bar {
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.ocr-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 3px; width: 0%;
+  transition: width .3s ease;
+}
+.ocr-progress-text { font-size: .72rem; color: var(--muted); margin-top: 5px; text-align: center; }
+
+/* 読み取り結果パネル */
+.ocr-result-panel {
+  margin-top: 16px; border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; display: none;
+}
+.ocr-result-panel.show { display: block; }
+.ocr-result-header {
+  background: #e8f5e9; padding: 10px 16px;
+  font-size: .78rem; font-weight: 600; color: var(--green);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ocr-result-header.warn { background: #fffde7; color: #7a5c00; }
+.ocr-result-header.error { background: #ffebee; color: #c62828; }
+.ocr-raw-toggle {
+  font-size: .7rem; font-weight: 500; color: var(--muted); cursor: pointer;
+  background: none; border: none; padding: 0; text-decoration: underline;
+}
+.ocr-raw-text {
+  background: #f8fafb; padding: 10px 14px;
+  font-size: .72rem; color: var(--muted); font-family: monospace;
+  white-space: pre-wrap; max-height: 120px; overflow-y: auto;
+  border-top: 1px solid var(--border); display: none;
+}
+.ocr-raw-text.show { display: block; }
+
+/* フィールドのOCR未確定ハイライト */
+.form-input.ocr-filled { border-color: #4caf50; background: #f1fdf3; }
+.form-input.ocr-uncertain { border-color: #ff9800; background: #fffde7; }
+.form-input.ocr-empty { border-color: #ef5350; background: #fff5f5; }
+.form-select.ocr-filled { border-color: #4caf50; background: #f1fdf3; }
+.form-select.ocr-uncertain { border-color: #ff9800; background: #fffde7; }
+.ocr-field-note {
+  font-size: .68rem; margin-top: 3px; padding: 2px 0;
+}
+.ocr-field-note.ok   { color: #2e7d32; }
+.ocr-field-note.warn { color: #e65100; }
+.ocr-field-note.err  { color: #c62828; }
+
+/* ── BACK LINK ── */
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .8rem; color: var(--accent); text-decoration: none;
+  margin-bottom: 20px; padding: 6px 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; transition: background .15s;
+}
+.back-link:hover { background: #e8f2fc; }
+
+/* ── FOOTER ── */
+footer { margin-top: 40px; text-align: center; font-size: .75rem; color: var(--muted); }
+footer span { color: var(--gold); }
+
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-strip { grid-template-columns: repeat(2,1fr); }
+  .data-table th:nth-child(5), .data-table td:nth-child(5) { display:none; }
+  .tab-btn { padding: 11px 14px; font-size: .78rem; }
+  .chart-wrap { height: 240px; }
+  .chart-wrap-radar { height: 280px; }
+}
 </style>
 </head>
 <body>
+
+<!-- ─── HEADER ─── -->
 <header>
-  <div class="portal-label">Global Lingua Network</div>
-  <h1>成績記録 <em>Dashboard</em></h1>
+  <div class="header-inner">
+    <div class="portal-label">Global Lingua Network &nbsp;/&nbsp; Score Tracker</div>
+    <h1>成績記録 <em>Dashboard</em></h1>
+    <p class="header-sub">定期テスト &amp; 模試の成績を記録してグラフで推移を確認</p>
+    <div class="header-meta">
+      <div class="meta-pill" id="hdr-school-type">課程: <strong>—</strong></div>
+      <div class="meta-pill" id="hdr-count-teiki">定期テスト: <strong>0 件</strong></div>
+      <div class="meta-pill" id="hdr-count-moshi">模試: <strong>0 件</strong></div>
+    </div>
+  </div>
 </header>
+
+<!-- ─── TAB NAV ─── -->
 <nav class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('teiki')">定期テスト <span id="badge-teiki">0</span></button>
-  <button class="tab-btn" onclick="switchTab('moshi')">模試 <span id="badge-moshi">0</span></button>
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" id="tab-teiki" onclick="switchTab('teiki')">
+      📝 定期テスト <span class="tab-badge" id="badge-teiki">0</span>
+    </button>
+    <button class="tab-btn" id="tab-moshi" onclick="switchTab('moshi')">
+      📋 模試 <span class="tab-badge" id="badge-moshi">0</span>
+    </button>
+  </div>
 </nav>
+
 <main>
-  <div id="panel-teiki" class="tab-panel active">
-    <div class="card">
-      <div class="card-header"><div class="card-title">データ入力 / OCR撮影</div></div>
-      <div class="card-body">
-        <label class="ocr-area">
-          <input type="file" accept="image/*" capture="environment" onchange="runOcr(event,'teiki')" hidden>
-          <div>📷 成績表を撮影して自動入力</div>
-          <img id="preview-teiki" class="ocr-preview">
-        </label>
-        <div id="bulk-ui-teiki" style="display:none;background:#fffde7;padding:10px;border-radius:8px;margin-bottom:15px;">
-          <div class="table-responsive"><table class="data-table" id="bulk-table-teiki"></table></div>
-          <div style="display:flex;gap:10px;margin-top:10px;"><button class="btn-primary" onclick="submitBulk('teiki')">一括登録</button><button class="btn-secondary" onclick="cancelBulk('teiki')">破棄</button></div>
-        </div>
-        <input type="hidden" id="edit-id-teiki">
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">試験名</label><input type="text" id="name-teiki" class="form-input" placeholder="1学期中間"></div>
-          <div class="form-group"><label class="form-label">日付</label><input type="date" id="date-teiki" class="form-input"></div>
-          <div class="form-group"><label class="form-label">科目</label><div class="subject-row"><select id="sel-subj-teiki" class="form-select" onchange="syncSubj('teiki')"></select><button class="btn-secondary" onclick="toggleSubj('teiki')">手入力</button></div><input type="text" id="cust-subj-teiki" class="form-input" style="display:none;margin-top:5px;"></div>
-          <div class="form-group"><label class="form-label">点数 / 満点</label><div style="display:flex;align-items:center;gap:5px;"><input type="number" id="score-teiki" class="form-input" style="width:70px;"><input type="number" id="max-teiki" class="form-input" value="100" style="width:70px;"></div></div>
-        </div>
-        <div style="display:flex;gap:10px;"><button id="btn-teiki" class="btn-primary btn-gold" onclick="addRec('teiki')">＋ 記録を追加</button><button class="btn-secondary" onclick="clearAll('teiki')">クリア</button></div>
+<a class="back-link" href="index.html">← ポータルに戻る</a>
+
+<!-- ════════════════════════════════
+     TAB: 定期テスト
+     ════════════════════════════════ -->
+<div class="tab-panel active" id="panel-teiki">
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-form">✏️</div>
+      <div>
+        <div class="card-num">Score Entry</div>
+        <div class="card-title">成績を入力する</div>
       </div>
     </div>
-    <div id="stats-teiki" class="stats-strip"></div>
-    <div class="card" id="card-chart-teiki" style="display:none;"><div class="card-body"><canvas id="chart-teiki" height="250"></canvas></div></div>
-    <div class="card"><div class="table-responsive" id="table-teiki"></div></div>
+    <div class="card-body">
+      <!-- 写真読み取りエリア -->
+      <div class="ocr-area" id="ocr-teiki"
+           onclick="ocrAreaClick(event,'teiki')"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event,'ocr-teiki')"
+           ondrop="handleDrop(event,'teiki')">
+        <input type="file" id="ocr-input-teiki" accept="image/*" onchange="handleImageSelect(event,'teiki')">
+        <div id="ocr-idle-teiki">
+          <div class="ocr-icon">📷</div>
+          <div class="ocr-label"><strong>成績表の写真をタップしてアップロード</strong></div>
+          <div class="ocr-hint">スマホ写真・スキャン対応 — 日本語＋数字を自動読み取り</div>
+          <div class="ocr-hint" style="margin-top:4px">またはここにドラッグ＆ドロップ</div>
+        </div>
+        <!-- プレビュー＋処理オーバーレイ -->
+        <div class="ocr-preview-wrap" id="ocr-preview-wrap-teiki">
+          <img class="ocr-preview" id="ocr-preview-teiki" alt="成績表プレビュー">
+          <div class="ocr-processing-overlay" id="ocr-overlay-teiki">
+            <div class="ocr-spinner"></div>
+            <div class="ocr-processing-label" id="ocr-overlay-label-teiki">読み取り準備中…</div>
+          </div>
+        </div>
+        <!-- プログレス -->
+        <div class="ocr-progress-wrap" id="ocr-progress-teiki">
+          <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocr-fill-teiki"></div></div>
+          <div class="ocr-progress-text" id="ocr-ptext-teiki">0%</div>
+        </div>
+      </div>
+      <!-- 読み取り結果パネル -->
+      <div class="ocr-result-panel" id="ocr-result-teiki">
+        <div class="ocr-result-header" id="ocr-result-hdr-teiki">
+          <span id="ocr-result-msg-teiki"></span>
+          <button class="ocr-raw-toggle" onclick="toggleRaw('teiki')">生テキストを見る</button>
+        </div>
+        <div class="ocr-raw-text" id="ocr-raw-teiki"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 試験名ロックバー -->
+      <div class="exam-lock-bar" id="teiki-lock-bar" style="display:none">
+        <div class="exam-lock-info">📌 試験名を引き継ぎ中：<strong id="teiki-lock-name"></strong> <span id="teiki-lock-date" style="color:var(--muted);font-size:.75rem"></span></div>
+        <button class="btn-exam-unlock" onclick="unlockExamName('teiki')">変更する</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group" id="teiki-name-group">
+          <label class="form-label">試験名</label>
+          <input type="text" id="teiki-name" class="form-input" placeholder="例：1学期中間考査">
+        </div>
+        <div class="form-group">
+          <label class="form-label">実施日</label>
+          <input type="date" id="teiki-date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">学年</label>
+          <select id="teiki-grade" class="form-select">
+            <option value="">選択してください</option>
+            <optgroup label="高等学校">
+              <option value="高1">高校1年</option>
+              <option value="高2">高校2年</option>
+              <option value="高3">高校3年</option>
+            </optgroup>
+            <optgroup label="中学校">
+              <option value="中1">中学1年</option>
+              <option value="中2">中学2年</option>
+              <option value="中3">中学3年</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">科目</label>
+          <div class="subject-row">
+            <select id="teiki-subject-sel" class="form-select" onchange="syncSubjectInput('teiki')"></select>
+            <button class="subject-toggle" onclick="toggleCustomSubject('teiki')" id="teiki-toggle-btn">手入力</button>
+          </div>
+          <input type="text" id="teiki-subject-custom" class="form-input" placeholder="科目名を入力" style="display:none; margin-top:6px;" oninput="syncSubjectFromCustom('teiki')">
+          <div class="form-hint">プルダウンから選択 or 手入力</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">点数 / 満点</label>
+          <div class="score-group">
+            <input type="number" id="teiki-score" class="form-input" placeholder="点数" min="0" max="9999" step="0.5">
+            <span class="score-sep">／</span>
+            <input type="number" id="teiki-max" class="form-input" placeholder="満点" min="1" max="9999" value="100">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">順位（任意）</label>
+          <div class="score-group">
+            <input type="number" id="teiki-rank" class="form-input" placeholder="順位" min="1">
+            <span class="score-sep">／</span>
+            <input type="number" id="teiki-rank-total" class="form-input" placeholder="人数">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">メモ（任意）</label>
+          <input type="text" id="teiki-memo" class="form-input" placeholder="自由記述">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary btn-gold" onclick="addRecord('teiki')">＋ 記録を追加</button>
+        <button class="btn-secondary" onclick="clearSubjectOnly('teiki')">科目・点数をクリア</button>
+        <button class="btn-secondary" onclick="clearForm('teiki')">全フィールドリセット</button>
+      </div>
+
+      <!-- OCR 一括確認パネル -->
+      <div class="ocr-bulk-panel" id="ocr-bulk-teiki">
+        <div class="ocr-bulk-header">
+          <span>📊 読み取り結果 — 確認してから一括登録してください</span>
+          <button class="ocr-raw-toggle" onclick="document.getElementById('ocr-bulk-teiki').classList.remove('show')">✕ 閉じる</button>
+        </div>
+        <div class="ocr-bulk-scroll" id="ocr-bulk-items-teiki"></div>
+        <div class="ocr-bulk-footer">
+          <button class="btn-primary btn-gold" onclick="bulkRegister('teiki')">✅ すべて登録する</button>
+          <button class="btn-secondary" onclick="document.getElementById('ocr-bulk-teiki').classList.remove('show')">キャンセル</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="panel-moshi" class="tab-panel">
-    <!-- 模試用（定期テストと同様の構造） -->
-    <div class="card">
-      <div class="card-header"><div class="card-title">模試データ入力</div></div>
-      <div class="card-body">
-        <label class="ocr-area"><input type="file" accept="image/*" capture="environment" onchange="runOcr(event,'moshi')" hidden>📷 模試成績表を撮影</label>
-        <div id="bulk-ui-moshi" style="display:none;background:#fffde7;padding:10px;border-radius:8px;margin-bottom:15px;"><table class="data-table" id="bulk-table-moshi"></table><button class="btn-primary" onclick="submitBulk('moshi')">一括登録</button></div>
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">模試名</label><input type="text" id="name-moshi" class="form-input"></div>
-          <div class="form-group"><label class="form-label">日付</label><input type="date" id="date-moshi" class="form-input"></div>
-          <div class="form-group"><label class="form-label">科目</label><div class="subject-row"><select id="sel-subj-moshi" class="form-select" onchange="syncSubj('moshi')"></select></div></div>
-          <div class="form-group"><label class="form-label">点数/偏差値</label><div style="display:flex;gap:5px;"><input type="number" id="score-moshi" class="form-input" placeholder="点"><input type="number" id="hen-moshi" class="form-input" step="0.1" placeholder="偏差値"></div></div>
-        </div>
-        <button id="btn-moshi" class="btn-primary btn-gold" onclick="addRec('moshi')">＋ 模試を記録</button>
+  <!-- サマリー統計 -->
+  <div id="teiki-stats-wrap" style="display:none">
+    <div class="stats-strip" id="teiki-stats"></div>
+  </div>
+
+  <!-- 科目フィルタ -->
+  <div class="card" id="teiki-chart-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-line">📈</div>
+      <div>
+        <div class="card-num">Trend Chart</div>
+        <div class="card-title">科目別 得点率推移</div>
       </div>
     </div>
-    <div id="stats-moshi" class="stats-strip"></div>
-    <div class="card" id="card-chart-moshi" style="display:none;"><div class="card-body"><canvas id="chart-moshi" height="250"></canvas></div></div>
-    <div class="card"><div class="table-responsive" id="table-moshi"></div></div>
+    <div class="card-body">
+      <div class="subject-filter" id="teiki-filter"></div>
+      <div class="chart-controls">
+        <button class="btn-chart-ctrl" onclick="resetZoom('teiki-line')">🔍 全体表示</button>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="teiki-line-chart"></canvas>
+      </div>
+      <div class="chart-hint">📌 ピンチアウトで拡大 / ドラッグでスクロール / 「全体表示」でリセット</div>
+    </div>
   </div>
+
+  <!-- レーダーチャート -->
+  <div class="card" id="teiki-radar-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-radar">🕸️</div>
+      <div>
+        <div class="card-num">Latest Radar</div>
+        <div class="card-title">最新試験 — 科目別 得点率</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap-radar">
+        <canvas id="teiki-radar-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- データ一覧 -->
+  <div class="card" id="teiki-table-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-table">📋</div>
+      <div>
+        <div class="card-num">Record List</div>
+        <div class="card-title">記録一覧</div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:16px 20px 0">
+      <div class="exam-delete-bar">
+        <span style="font-size:.8rem;color:var(--rose);font-weight:600;white-space:nowrap">🗑 テスト一括削除</span>
+        <select id="teiki-exam-del-sel"></select>
+        <button class="btn-exam-del" onclick="deleteExam('teiki')">このテストを全削除</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 0 8px">
+      <div id="teiki-table-wrap"></div>
+    </div>
+  </div>
+
+</div><!-- /panel-teiki -->
+
+<!-- ════════════════════════════════
+     TAB: 模試
+     ════════════════════════════════ -->
+<div class="tab-panel" id="panel-moshi">
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-form">✏️</div>
+      <div>
+        <div class="card-num">Score Entry</div>
+        <div class="card-title">模試の成績を入力する</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ocr-area" id="ocr-moshi"
+           onclick="ocrAreaClick(event,'moshi')"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event,'ocr-moshi')"
+           ondrop="handleDrop(event,'moshi')">
+        <input type="file" id="ocr-input-moshi" accept="image/*" onchange="handleImageSelect(event,'moshi')">
+        <div id="ocr-idle-moshi">
+          <div class="ocr-icon">📷</div>
+          <div class="ocr-label"><strong>成績表の写真をタップしてアップロード</strong></div>
+          <div class="ocr-hint">スマホ写真・スキャン対応 — 日本語＋数字を自動読み取り</div>
+          <div class="ocr-hint" style="margin-top:4px">またはここにドラッグ＆ドロップ</div>
+        </div>
+        <div class="ocr-preview-wrap" id="ocr-preview-wrap-moshi">
+          <img class="ocr-preview" id="ocr-preview-moshi" alt="成績表プレビュー">
+          <div class="ocr-processing-overlay" id="ocr-overlay-moshi">
+            <div class="ocr-spinner"></div>
+            <div class="ocr-processing-label" id="ocr-overlay-label-moshi">読み取り準備中…</div>
+          </div>
+        </div>
+        <div class="ocr-progress-wrap" id="ocr-progress-moshi">
+          <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocr-fill-moshi"></div></div>
+          <div class="ocr-progress-text" id="ocr-ptext-moshi">0%</div>
+        </div>
+      </div>
+      <div class="ocr-result-panel" id="ocr-result-moshi">
+        <div class="ocr-result-header" id="ocr-result-hdr-moshi">
+          <span id="ocr-result-msg-moshi"></span>
+          <button class="ocr-raw-toggle" onclick="toggleRaw('moshi')">生テキストを見る</button>
+        </div>
+        <div class="ocr-raw-text" id="ocr-raw-moshi"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">模試名</label>
+          <select id="moshi-name-sel" class="form-select" onchange="syncMoshiName()">
+            <option value="">選択してください</option>
+            <optgroup label="河合塾">
+              <option value="全統共通テスト模試">全統共通テスト模試</option>
+              <option value="全統記述模試">全統記述模試</option>
+              <option value="全統高1・2模試">全統高1・2模試</option>
+            </optgroup>
+            <optgroup label="駿台">
+              <option value="駿台全国模試">駿台全国模試</option>
+              <option value="駿台高校入試センター模試">駿台高校入試センター模試</option>
+              <option value="駿台共通テスト模試">駿台共通テスト模試</option>
+            </optgroup>
+            <optgroup label="進研ゼミ・ベネッセ">
+              <option value="進研模試（共通テスト模試）">進研模試（共通テスト模試）</option>
+              <option value="進研模試（記述）">進研模試（記述）</option>
+            </optgroup>
+            <optgroup label="東進">
+              <option value="共通テスト本番レベル模試">共通テスト本番レベル模試</option>
+              <option value="センター試験本番レベル模試">センター試験本番レベル模試</option>
+            </optgroup>
+            <optgroup label="その他">
+              <option value="other">その他（手入力）</option>
+            </optgroup>
+          </select>
+          <input type="text" id="moshi-name-custom" class="form-input" placeholder="模試名を入力" style="display:none; margin-top:6px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">実施日</label>
+          <input type="date" id="moshi-date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">学年</label>
+          <select id="moshi-grade" class="form-select">
+            <option value="">選択してください</option>
+            <optgroup label="高等学校">
+              <option value="高1">高校1年</option>
+              <option value="高2">高校2年</option>
+              <option value="高3">高校3年</option>
+            </optgroup>
+            <optgroup label="中学校">
+              <option value="中1">中学1年</option>
+              <option value="中2">中学2年</option>
+              <option value="中3">中学3年</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">科目</label>
+          <div class="subject-row">
+            <select id="moshi-subject-sel" class="form-select" onchange="syncSubjectInput('moshi')"></select>
+            <button class="subject-toggle" onclick="toggleCustomSubject('moshi')" id="moshi-toggle-btn">手入力</button>
+          </div>
+          <input type="text" id="moshi-subject-custom" class="form-input" placeholder="科目名を入力" style="display:none; margin-top:6px;" oninput="syncSubjectFromCustom('moshi')">
+          <div class="form-hint">プルダウンから選択 or 手入力</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">点数 / 満点</label>
+          <div class="score-group">
+            <input type="number" id="moshi-score" class="form-input" placeholder="点数" min="0" max="9999" step="0.5">
+            <span class="score-sep">／</span>
+            <input type="number" id="moshi-max" class="form-input" placeholder="満点" min="1" max="9999" value="200">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">偏差値（任意）</label>
+          <input type="number" id="moshi-hensachi" class="form-input" placeholder="例：62.4" min="0" max="100" step="0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">全国順位（任意）</label>
+          <div class="score-group">
+            <input type="number" id="moshi-rank" class="form-input" placeholder="順位" min="1">
+            <span class="score-sep">／</span>
+            <input type="number" id="moshi-rank-total" class="form-input" placeholder="人数">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">メモ（任意）</label>
+          <input type="text" id="moshi-memo" class="form-input" placeholder="自由記述">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary btn-gold" onclick="addRecord('moshi')">＋ 記録を追加</button>
+        <button class="btn-secondary" onclick="clearSubjectOnly('moshi')">科目・点数をクリア</button>
+        <button class="btn-secondary" onclick="clearForm('moshi')">全フィールドリセット</button>
+      </div>
+
+      <!-- OCR 一括確認パネル -->
+      <div class="ocr-bulk-panel" id="ocr-bulk-moshi">
+        <div class="ocr-bulk-header">
+          <span>📊 読み取り結果 — 確認してから一括登録してください</span>
+          <button class="ocr-raw-toggle" onclick="document.getElementById('ocr-bulk-moshi').classList.remove('show')">✕ 閉じる</button>
+        </div>
+        <div class="ocr-bulk-scroll" id="ocr-bulk-items-moshi"></div>
+        <div class="ocr-bulk-footer">
+          <button class="btn-primary btn-gold" onclick="bulkRegister('moshi')">✅ すべて登録する</button>
+          <button class="btn-secondary" onclick="document.getElementById('ocr-bulk-moshi').classList.remove('show')">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- サマリー統計 -->
+  <div id="moshi-stats-wrap" style="display:none">
+    <div class="stats-strip" id="moshi-stats"></div>
+  </div>
+
+  <!-- 科目別推移グラフ -->
+  <div class="card" id="moshi-chart-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-line">📈</div>
+      <div>
+        <div class="card-num">Trend Chart</div>
+        <div class="card-title">科目別 得点率推移</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="subject-filter" id="moshi-filter"></div>
+      <div class="chart-controls">
+        <button class="btn-chart-ctrl" onclick="resetZoom('moshi-line')">🔍 全体表示</button>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="moshi-line-chart"></canvas>
+      </div>
+      <div class="chart-hint">📌 ピンチアウトで拡大 / ドラッグでスクロール</div>
+    </div>
+  </div>
+
+  <!-- 偏差値推移グラフ -->
+  <div class="card" id="moshi-hensachi-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-radar">📉</div>
+      <div>
+        <div class="card-num">Hensachi Trend</div>
+        <div class="card-title">科目別 偏差値推移</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="moshi-hensachi-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- レーダーチャート -->
+  <div class="card" id="moshi-radar-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-radar">🕸️</div>
+      <div>
+        <div class="card-num">Latest Radar</div>
+        <div class="card-title">最新模試 — 科目別 得点率</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap-radar">
+        <canvas id="moshi-radar-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- データ一覧 -->
+  <div class="card" id="moshi-table-card" style="display:none">
+    <div class="card-header">
+      <div class="card-icon icon-table">📋</div>
+      <div>
+        <div class="card-num">Record List</div>
+        <div class="card-title">記録一覧</div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:16px 20px 0">
+      <div class="exam-delete-bar">
+        <span style="font-size:.8rem;color:var(--rose);font-weight:600;white-space:nowrap">🗑 模試一括削除</span>
+        <select id="moshi-exam-del-sel"></select>
+        <button class="btn-exam-del" onclick="deleteExam('moshi')">この模試を全削除</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 0 8px">
+      <div id="moshi-table-wrap"></div>
+    </div>
+  </div>
+
+</div><!-- /panel-moshi -->
+
 </main>
 
-<div id="ocr-loading" class="ocr-overlay"><div class="spinner"></div><p style="margin-top:15px;">文字を解析中...</p></div>
+<footer>
+  © Takumi Wakabayashi &nbsp;—&nbsp; <span>Global Lingua Network</span>
+</footer>
+
+<!-- ── 編集モーダル ── -->
+<div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">✏️ 記録を編集</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-type">
+      <input type="hidden" id="edit-id">
+      <div class="form-grid" style="grid-template-columns:1fr 1fr">
+        <div class="form-group">
+          <label class="form-label">試験名</label>
+          <input type="text" id="edit-name" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">実施日</label>
+          <input type="date" id="edit-date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">学年</label>
+          <select id="edit-grade" class="form-select">
+            <option value="">—</option>
+            <option value="高1">高校1年</option><option value="高2">高校2年</option><option value="高3">高校3年</option>
+            <option value="中1">中学1年</option><option value="中2">中学2年</option><option value="中3">中学3年</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">科目</label>
+          <input type="text" id="edit-subject" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">点数</label>
+          <input type="number" id="edit-score" class="form-input" step="0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">満点</label>
+          <input type="number" id="edit-max" class="form-input">
+        </div>
+        <div class="form-group" id="edit-hensachi-group">
+          <label class="form-label">偏差値</label>
+          <input type="number" id="edit-hensachi" class="form-input" step="0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">順位</label>
+          <div class="score-group">
+            <input type="number" id="edit-rank" class="form-input" placeholder="順位">
+            <span class="score-sep">／</span>
+            <input type="number" id="edit-rank-total" class="form-input" placeholder="人数">
+          </div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">メモ</label>
+          <input type="text" id="edit-memo" class="form-input">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEditModal()">キャンセル</button>
+      <button class="btn-primary btn-gold" onclick="saveEdit()">💾 保存する</button>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
-const $ = id => document.getElementById(id);
-let DATA = { teiki: [], moshi: [] };
-let CHARTS = {};
-let BULK_TEMP = { teiki: [], moshi: [] };
-const SUBJ_MASTER = ["国語","数学I","数学A","数学II","数学B","英語","物理","化学","生物","日本史","世界史","地理","公共"];
+'use strict';
 
-window.onload = () => {
-  const saved = localStorage.getItem('gln_v2');
-  if(saved) DATA = JSON.parse(saved);
-  initSels();
-  refresh('teiki'); refresh('moshi');
-  $('date-teiki').value = $('date-moshi').value = new Date().toISOString().split('T')[0];
+// ════════════════════════════════════════════════════
+//  科目マスタ（文部科学省 学習指導要領準拠）
+// ════════════════════════════════════════════════════
+var SUBJECTS = {
+  '国語': [
+    '国語', '現代の国語', '言語文化', '論理国語', '文学国語',
+    '古典探究', '国語表現', '現代文A', '現代文B', '古典A', '古典B'
+  ],
+  '地理歴史': [
+    '地理総合', '地理探究', '歴史総合', '日本史探究', '世界史探究',
+    '地理A', '地理B', '日本史A', '日本史B', '世界史A', '世界史B'
+  ],
+  '公民': [
+    '公共', '倫理', '政治・経済', '現代社会', '倫理・政治経済'
+  ],
+  '数学': [
+    '数学I', '数学II', '数学III', '数学A', '数学B', '数学C',
+    '数学I・A', '数学II・B', '数学II・B・C'
+  ],
+  '理科': [
+    '科学と人間生活', '物理基礎', '物理', '化学基礎', '化学',
+    '生物基礎', '生物', '地学基礎', '地学',
+    '理科基礎（物理・化学）', '理科基礎（化学・生物）', '理科基礎（物理・生物）'
+  ],
+  '保健体育': ['体育', '保健'],
+  '芸術': ['音楽I', '音楽II', '美術I', '美術II', '工芸I', '書道I', '書道II'],
+  '外国語': [
+    '英語コミュニケーションI', '英語コミュニケーションII', '英語コミュニケーションIII',
+    '論理・表現I', '論理・表現II', '論理・表現III',
+    '英語', '英語表現I', '英語表現II', '英語リーディング', '英語リスニング',
+    'コミュニケーション英語I', 'コミュニケーション英語II', 'コミュニケーション英語III'
+  ],
+  '家庭': ['家庭基礎', '家庭総合'],
+  '情報': ['情報I', '情報II'],
+  '理科（中学）': ['理科'],
+  '社会（中学）': ['地理', '歴史', '公民'],
+  '実技（中学）': ['技術・家庭', '音楽', '美術', '保健体育']
 };
 
-function initSels() {
-  ['teiki','moshi'].forEach(t => {
-    let h = '<option value="">選択してください</option>';
-    SUBJ_MASTER.forEach(s => h += `<option value="${s}">${s}</option>`);
-    $(`sel-subj-${t}`).innerHTML = h + '<option value="other">その他(手入力)</option>';
-  });
+// ── グラフカラーパレット ──
+var COLORS = [
+  '#1a7fd4','#c89a2e','#2e7d32','#8e24aa','#e53935',
+  '#0097a7','#f57c00','#5c6bc0','#43a047','#795548',
+  '#00838f','#ad1457'
+];
+
+// ── データストア ──
+var DATA = { teiki: [], moshi: [] };
+var CHARTS = {};
+var ACTIVE_FILTERS = { teiki: null, moshi: null };
+var CUSTOM_MODE = { teiki: false, moshi: false };
+
+// ── 試験名ロック（科目追加連続入力用）──
+var EXAM_LOCK = { teiki: null, moshi: null };
+// null = ロックなし, { name, date } = ロック中
+
+// ── 一括OCR登録バッファ ──
+var BULK_BUFFER = { teiki: [], moshi: [] };
+
+// ── 初期化 ──
+(function init() {
+  loadData();
+  buildSubjectSelects();
+  setDefaultDates();
+  updateAll('teiki');
+  updateAll('moshi');
+  updateHeader();
+})();
+
+function loadData() {
+  try {
+    var saved = localStorage.getItem('gln_scores');
+    if (saved) DATA = JSON.parse(saved);
+    if (!DATA.teiki) DATA.teiki = [];
+    if (!DATA.moshi) DATA.moshi = [];
+  } catch(e) { DATA = { teiki: [], moshi: [] }; }
 }
 
-function switchTab(t) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  $(`panel-${t}`).classList.add('active');
-  event.currentTarget.classList.add('active');
+function saveData() {
+  try { localStorage.setItem('gln_scores', JSON.stringify(DATA)); } catch(e) {}
 }
 
-function toast(m) {
-  const s = $('toast'); s.textContent = m; s.classList.add('show');
-  setTimeout(() => s.classList.remove('show'), 2000);
-}
-
-function refresh(t) {
-  localStorage.setItem('gln_v2', JSON.stringify(DATA));
-  $(`badge-${t}`).textContent = DATA[t].length;
-  renderStats(t);
-  renderTable(t);
-  renderChart(t);
-}
-
-function syncSubj(t) {
-  const s = $(`sel-subj-${t}`), c = $(`cust-subj-${t}`);
-  if(s.value === 'other') { c.style.display = 'block'; c.focus(); }
-  else { c.style.display = 'none'; c.value = s.value; }
-}
-
-function toggleSubj(t) {
-  const s = $(`sel-subj-${t}`), c = $(`cust-subj-${t}`);
-  const isHidden = s.style.display === 'none';
-  s.style.display = isHidden ? 'block' : 'none';
-  c.style.display = isHidden ? 'none' : 'block';
-}
-
-function addRec(t) {
-  const name = $(`name-${t}`).value, date = $(`date-${t}`).value;
-  const subj = $(`sel-subj-${t}`).value === 'other' ? $(`cust-subj-${t}`).value : $(`sel-subj-${t}`).value;
-  const score = parseFloat($(`score-${t}`).value);
-  if(!name || !subj || isNaN(score)) return alert('試験名、科目、点数を入力してください');
-
-  const id = $(`edit-id-${t}`).value;
-  const rec = { id: id ? Number(id) : Date.now(), name, date, subject: subj, score, max: parseFloat($(`max-${t}`).value)||100 };
-  if(t==='moshi') rec.hen = parseFloat($(`hen-moshi`).value);
-
-  if(id) DATA[t] = DATA[t].map(r => r.id === rec.id ? rec : r);
-  else DATA[t].push(rec);
-
-  refresh(t); clearAll(t); toast('保存しました');
-}
-
-function renderTable(t) {
-  let h = `<table class="data-table"><thead><tr><th>日付</th><th>科目</th><th>点数</th><th>操作</th></tr></thead><tbody>`;
-  DATA[t].sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(r => {
-    h += `<tr><td>${r.date.slice(5)}</td><td>${r.subject}</td><td>${r.score}<small>/${r.max}</small></td>
-    <td><button class="btn-secondary" onclick="editRec('${t}',${r.id})">改</button><button class="btn-secondary" onclick="delRec('${t}',${r.id})">×</button></td></tr>`;
-  });
-  $(`table-${t}`).innerHTML = h + '</tbody></table>';
-}
-
-function editRec(t, id) {
-  const r = DATA[t].find(x => x.id === id);
-  $(`edit-id-${t}`).value = r.id; $(`name-${t}`).value = r.name; $(`date-${t}`).value = r.date;
-  $(`score-${t}`).value = r.score; $(`max-${t}`).value = r.max;
-  $(`sel-subj-${t}`).value = SUBJ_MASTER.includes(r.subject) ? r.subject : 'other';
-  if($(`sel-subj-${t}`).value === 'other') { $(`cust-subj-${t}`).value = r.subject; $(`cust-subj-${t}`).style.display='block'; }
-  $(`btn-${t}`).textContent = '✓ 更新する';
-}
-
-function delRec(t, id) { if(confirm('消去しますか？')){ DATA[t]=DATA[t].filter(x=>x.id!==id); refresh(t); } }
-
-function clearAll(t) {
-  $(`edit-id-${t}`).value = ''; $(`score-${t}`).value = ''; $(`btn-${t}`).textContent = '＋ 記録を追加';
-}
-
-function renderStats(t) {
-  if(!DATA[t].length) { $(`stats-${t}`).innerHTML = ''; return; }
-  const avg = DATA[t].reduce((p,c)=>p+(c.score/c.max*100),0) / DATA[t].length;
-  $(`stats-${t}`).innerHTML = `<div class="stat-card"><div class="stat-val">${DATA[t].length}</div>件</div><div class="stat-card"><div class="stat-val">${Math.round(avg)}%</div>平均</div>`;
-}
-
-function renderChart(t) {
-  if(!DATA[t].length) return;
-  $(`card-chart-${t}`).style.display = 'block';
-  if(CHARTS[t]) CHARTS[t].destroy();
-  const sorted = [...DATA[t]].sort((a,b)=>new Date(a.date)-new Date(b.date));
-  const subjs = [...new Set(sorted.map(r=>r.subject))];
-  const dates = [...new Set(sorted.map(r=>r.date))];
-  
-  CHARTS[t] = new Chart($(`chart-${t}`), {
-    type:'line',
-    data: {
-      labels: dates.map(d => d.slice(5)),
-      datasets: subjs.map((s,i) => ({
-        label: s,
-        data: dates.map(d => {
-          const match = sorted.find(r=>r.subject===s && r.date===d);
-          return match ? (match.score/match.max*100) : null;
-        }),
-        borderColor: `hsl(${i*40},70%,50%)`, tension: 0.3, spanGaps: true
-      }))
-    },
-    options: { responsive: true, scales: { y: { min:0, max:100 } } }
-  });
-}
-
-async function runOcr(ev, t) {
-  const file = ev.target.files[0]; if(!file) return;
-  $('ocr-loading').style.display = 'flex';
-  const worker = await Tesseract.createWorker('jpn');
-  const { data: { text } } = await worker.recognize(file);
-  await worker.terminate();
-  $('ocr-loading').style.display = 'none';
-  
-  const results = [];
-  const lines = text.split('\n');
-  lines.forEach(l => {
-    SUBJ_MASTER.forEach(s => {
-      if(l.includes(s)) {
-        const m = l.match(/(\d{1,3})/);
-        if(m) results.push({ subject: s, score: Number(m[1]), name: "OCR読取", date: new Date().toISOString().split('T')[0] });
-      }
+function buildSubjectSelects() {
+  var types = ['teiki', 'moshi'];
+  types.forEach(function(type) {
+    var sel = document.getElementById(type + '-subject-sel');
+    sel.innerHTML = '<option value="">科目を選択</option>';
+    Object.keys(SUBJECTS).forEach(function(group) {
+      var og = document.createElement('optgroup');
+      og.label = group;
+      SUBJECTS[group].forEach(function(subj) {
+        var opt = document.createElement('option');
+        opt.value = subj; opt.textContent = subj;
+        og.appendChild(opt);
+      });
+      sel.appendChild(og);
     });
+    // その他
+    var otherOg = document.createElement('optgroup');
+    otherOg.label = 'その他';
+    var otherOpt = document.createElement('option');
+    otherOpt.value = 'other'; otherOpt.textContent = 'その他（手入力）';
+    otherOg.appendChild(otherOpt);
+    sel.appendChild(otherOg);
+  });
+}
+
+function setDefaultDates() {
+  var today = new Date().toISOString().slice(0, 10);
+  ['teiki-date', 'moshi-date'].forEach(function(id) {
+    document.getElementById(id).value = today;
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  タブ切り替え
+// ════════════════════════════════════════════════════
+function switchTab(name) {
+  ['teiki','moshi'].forEach(function(t) {
+    document.getElementById('panel-' + t).classList.remove('active');
+    document.getElementById('tab-' + t).classList.remove('active');
+  });
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+//  科目プルダウン ↔ 手入力 同期
+// ════════════════════════════════════════════════════
+function syncSubjectInput(type) {
+  var sel = document.getElementById(type + '-subject-sel');
+  var custom = document.getElementById(type + '-subject-custom');
+  if (sel.value === 'other') {
+    custom.style.display = 'block';
+    custom.focus();
+    CUSTOM_MODE[type] = true;
+  } else {
+    custom.value = sel.value !== '' ? sel.value : '';
+    CUSTOM_MODE[type] = false;
+  }
+}
+
+function syncSubjectFromCustom(type) {
+  // 手入力中はプルダウンを「その他」に
+  document.getElementById(type + '-subject-sel').value = 'other';
+}
+
+function toggleCustomSubject(type) {
+  var custom = document.getElementById(type + '-subject-custom');
+  var btn    = document.getElementById(type + '-toggle-btn');
+  var sel    = document.getElementById(type + '-subject-sel');
+  CUSTOM_MODE[type] = !CUSTOM_MODE[type];
+  if (CUSTOM_MODE[type]) {
+    custom.style.display = 'block';
+    sel.style.display = 'none';
+    btn.textContent = 'プルダウン';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+    sel.style.display = 'block';
+    btn.textContent = '手入力';
+  }
+}
+
+function getSubjectValue(type) {
+  if (CUSTOM_MODE[type]) {
+    return document.getElementById(type + '-subject-custom').value.trim();
+  }
+  var sel = document.getElementById(type + '-subject-sel');
+  if (sel.value === 'other') {
+    return document.getElementById(type + '-subject-custom').value.trim();
+  }
+  return sel.value;
+}
+
+function syncMoshiName() {
+  var sel = document.getElementById('moshi-name-sel');
+  var custom = document.getElementById('moshi-name-custom');
+  if (sel.value === 'other') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+  }
+}
+
+function getMoshiName() {
+  var sel = document.getElementById('moshi-name-sel');
+  if (sel.value === 'other' || sel.value === '') {
+    return document.getElementById('moshi-name-custom').value.trim();
+  }
+  return sel.value;
+}
+
+// ════════════════════════════════════════════════════
+//  記録追加
+// ════════════════════════════════════════════════════
+function addRecord(type) {
+  // 試験名：ロック中ならロック値を使用
+  var name;
+  if (EXAM_LOCK[type]) {
+    name = EXAM_LOCK[type].name;
+  } else {
+    name = type === 'teiki'
+      ? document.getElementById('teiki-name').value.trim()
+      : getMoshiName();
+  }
+  var date    = document.getElementById(type + '-date').value;
+  var grade   = document.getElementById(type + '-grade').value;
+  var subject = getSubjectValue(type);
+  var score   = parseFloat(document.getElementById(type + '-score').value);
+  var max     = parseFloat(document.getElementById(type + '-max').value) || 100;
+  var memo    = document.getElementById(type + '-memo').value.trim();
+
+  if (!name)              { alert('試験名／模試名を入力してください。'); return; }
+  if (!date)              { alert('実施日を選択してください。'); return; }
+  if (!subject)           { alert('科目を選択または入力してください。'); return; }
+  if (isNaN(score) || score < 0) { alert('正しい点数を入力してください。'); return; }
+  if (max <= 0)           { alert('正しい満点を入力してください。'); return; }
+
+  var rec = { id: Date.now(), name: name, date: date, grade: grade, subject: subject, score: score, max: max, memo: memo };
+
+  if (type === 'teiki') {
+    rec.rank      = parseInt(document.getElementById('teiki-rank').value)       || 0;
+    rec.rankTotal = parseInt(document.getElementById('teiki-rank-total').value) || 0;
+  } else {
+    rec.hensachi  = parseFloat(document.getElementById('moshi-hensachi').value) || 0;
+    rec.rank      = parseInt(document.getElementById('moshi-rank').value)       || 0;
+    rec.rankTotal = parseInt(document.getElementById('moshi-rank-total').value) || 0;
+  }
+
+  DATA[type].push(rec);
+  DATA[type].sort(function(a,b){ return a.date.localeCompare(b.date) || a.name.localeCompare(b.name); });
+  saveData();
+  updateAll(type);
+  updateHeader();
+
+  // ロックをセット（初回追加後に試験名・日付を記憶）
+  setExamLock(type, name, date);
+
+  // 科目・点数・順位のみクリア（試験名・日付は残す）
+  clearSubjectOnly(type);
+  showToast('✅ ' + subject + ' を追加 — 次の科目を入力してください');
+}
+
+// 試験名ロックをセット
+function setExamLock(type, name, date) {
+  EXAM_LOCK[type] = { name: name, date: date };
+  var bar = document.getElementById(type + '-lock-bar');
+  if (bar) {
+    bar.style.display = '';
+    document.getElementById(type + '-lock-name').textContent = name;
+    var dateEl = document.getElementById(type + '-lock-date');
+    if (dateEl) dateEl.textContent = '(' + fmtDate(date) + ')';
+    // 試験名入力欄を非表示
+    var nameGroup = document.getElementById(type + '-name-group');
+    if (nameGroup) nameGroup.style.display = 'none';
+    if (type === 'teiki') {
+      // 日付フィールドもロック
+      var dateField = document.getElementById('teiki-date');
+      if (dateField) dateField.disabled = true;
+    }
+  }
+}
+
+// 試験名ロック解除
+function unlockExamName(type) {
+  EXAM_LOCK[type] = null;
+  var bar = document.getElementById(type + '-lock-bar');
+  if (bar) bar.style.display = 'none';
+  var nameGroup = document.getElementById(type + '-name-group');
+  if (nameGroup) nameGroup.style.display = '';
+  if (type === 'teiki') {
+    var dateField = document.getElementById('teiki-date');
+    if (dateField) { dateField.disabled = false; dateField.focus(); }
+  }
+  document.getElementById(type === 'teiki' ? 'teiki-name' : 'moshi-name-custom').focus();
+}
+
+// 科目・点数のみクリア（試験名・日付は保持）
+function clearSubjectOnly(type) {
+  var scoreFields = type === 'teiki'
+    ? ['teiki-score', 'teiki-rank', 'teiki-rank-total', 'teiki-memo']
+    : ['moshi-score', 'moshi-hensachi', 'moshi-rank', 'moshi-rank-total', 'moshi-memo'];
+  scoreFields.forEach(function(id){ var el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById(type + '-max').value = type === 'teiki' ? '100' : '200';
+  // 科目リセット
+  document.getElementById(type + '-subject-sel').value = '';
+  document.getElementById(type + '-subject-custom').value = '';
+  CUSTOM_MODE[type] = false;
+  document.getElementById(type + '-subject-custom').style.display = 'none';
+  var sel = document.getElementById(type + '-subject-sel');
+  if (sel) sel.style.display = '';
+  var btn = document.getElementById(type + '-toggle-btn');
+  if (btn) btn.textContent = '手入力';
+  // OCRフィールドノートをクリア
+  document.querySelectorAll('.ocr-field-note').forEach(function(n){ n.remove(); });
+  document.querySelectorAll('.ocr-filled,.ocr-uncertain,.ocr-empty').forEach(function(el){
+    el.classList.remove('ocr-filled','ocr-uncertain','ocr-empty');
+  });
+  // 科目欄にフォーカス
+  setTimeout(function(){ document.getElementById(type + '-subject-sel').focus(); }, 50);
+}
+
+// 全フィールドリセット（試験名ロックも解除）
+function clearForm(type) {
+  // ロック解除
+  EXAM_LOCK[type] = null;
+  var bar = document.getElementById(type + '-lock-bar');
+  if (bar) bar.style.display = 'none';
+  var nameGroup = document.getElementById(type + '-name-group');
+  if (nameGroup) nameGroup.style.display = '';
+
+  var allFields = type === 'teiki'
+    ? ['teiki-name','teiki-score','teiki-memo','teiki-rank','teiki-rank-total']
+    : ['moshi-score','moshi-hensachi','moshi-memo','moshi-rank','moshi-rank-total'];
+  allFields.forEach(function(id){ var el = document.getElementById(id); if(el) el.value = ''; });
+
+  document.getElementById(type + '-max').value = type === 'teiki' ? '100' : '200';
+  document.getElementById(type + '-subject-sel').value = '';
+  document.getElementById(type + '-subject-custom').value = '';
+  CUSTOM_MODE[type] = false;
+  document.getElementById(type + '-subject-custom').style.display = 'none';
+  var sel = document.getElementById(type + '-subject-sel');
+  if (sel) sel.style.display = '';
+
+  if (type === 'teiki') {
+    var dateField = document.getElementById('teiki-date');
+    if (dateField) { dateField.disabled = false; dateField.value = new Date().toISOString().slice(0,10); }
+  } else {
+    document.getElementById('moshi-name-sel').value = '';
+    document.getElementById('moshi-name-custom').style.display = 'none';
+    document.getElementById('moshi-name-custom').value = '';
+  }
+  document.querySelectorAll('.ocr-field-note').forEach(function(n){ n.remove(); });
+  document.querySelectorAll('.ocr-filled,.ocr-uncertain,.ocr-empty').forEach(function(el){
+    el.classList.remove('ocr-filled','ocr-uncertain','ocr-empty');
+  });
+  showToast('🔄 フォームをリセットしました');
+}
+
+function deleteRecord(type, id) {
+  if (!confirm('この記録を削除しますか？')) return;
+  DATA[type] = DATA[type].filter(function(r){ return r.id !== id; });
+  saveData();
+  updateAll(type);
+  updateHeader();
+  showToast('🗑️ 記録を削除しました');
+}
+
+// テスト名ごと一括削除
+function deleteExam(type) {
+  var sel = document.getElementById(type + '-exam-del-sel');
+  var examName = sel ? sel.value : '';
+  if (!examName) { alert('削除するテスト名を選択してください。'); return; }
+  var count = DATA[type].filter(function(r){ return r.name === examName; }).length;
+  if (!confirm('「' + examName + '」の記録 ' + count + '件をすべて削除しますか？')) return;
+  DATA[type] = DATA[type].filter(function(r){ return r.name !== examName; });
+  saveData();
+  updateAll(type);
+  updateHeader();
+  showToast('🗑️「' + examName + '」を全削除しました');
+}
+
+// ════════════════════════════════════════════════════
+//  全更新
+// ════════════════════════════════════════════════════
+function updateAll(type) {
+  var records = DATA[type];
+  var hasData = records.length > 0;
+
+  document.getElementById(type + '-chart-card').style.display  = hasData ? '' : 'none';
+  document.getElementById(type + '-radar-card').style.display  = hasData ? '' : 'none';
+  document.getElementById(type + '-table-card').style.display  = hasData ? '' : 'none';
+  document.getElementById(type + '-stats-wrap').style.display  = hasData ? '' : 'none';
+  if (type === 'moshi') {
+    var hasHensachi = records.some(function(r){ return r.hensachi > 0; });
+    document.getElementById('moshi-hensachi-card').style.display = hasHensachi ? '' : 'none';
+  }
+
+  if (!hasData) { updateBadge(type, 0); return; }
+
+  updateBadge(type, records.length);
+  updateStats(type, records);
+  buildFilter(type, records);
+  renderLineChart(type, records);
+  renderRadarChart(type, records);
+  if (type === 'moshi') renderHensachiChart(records);
+  renderTable(type, records);
+  updateExamDelSelect(type, records);
+}
+
+function updateBadge(type, count) {
+  document.getElementById('badge-' + type).textContent = count;
+}
+
+// テスト一括削除セレクトを更新
+function updateExamDelSelect(type, records) {
+  var sel = document.getElementById(type + '-exam-del-sel');
+  if (!sel) return;
+  var names = {};
+  records.forEach(function(r){ names[r.name] = (names[r.name]||0)+1; });
+  sel.innerHTML = '';
+  Object.keys(names).sort().forEach(function(n) {
+    var opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n + '（' + names[n] + '科目）';
+    sel.appendChild(opt);
+  });
+}
+
+function updateHeader() {
+  document.getElementById('hdr-count-teiki').innerHTML = '定期テスト: <strong>' + DATA.teiki.length + ' 件</strong>';
+  document.getElementById('hdr-count-moshi').innerHTML = '模試: <strong>' + DATA.moshi.length + ' 件</strong>';
+}
+
+// ════════════════════════════════════════════════════
+//  統計サマリー
+// ════════════════════════════════════════════════════
+function updateStats(type, records) {
+  var total = records.length;
+  var sumPct = 0;
+  var bestPct = 0; var worstPct = 100;
+  records.forEach(function(r) {
+    var p = r.score / r.max * 100;
+    sumPct += p;
+    if (p > bestPct) bestPct = p;
+    if (p < worstPct) worstPct = p;
+  });
+  var avgPct = sumPct / total;
+  var subjects = getUniqueSubjects(records);
+
+  var statsEl = document.getElementById(type + '-stats');
+  statsEl.innerHTML =
+    statCard(total + '件', '記録数') +
+    statCard(Math.round(avgPct) + '%', '平均得点率') +
+    statCard(Math.round(bestPct) + '%', '最高得点率') +
+    statCard(Math.round(worstPct) + '%', '最低得点率') +
+    statCard(subjects.length + '科目', '登録科目数');
+}
+
+function statCard(val, label) {
+  return '<div class="stat-card"><div class="stat-card-val">' + esc(val) + '</div><div class="stat-card-label">' + esc(label) + '</div></div>';
+}
+
+// ════════════════════════════════════════════════════
+//  フィルタチップ
+// ════════════════════════════════════════════════════
+function getUniqueSubjects(records) {
+  var seen = {};
+  records.forEach(function(r){ seen[r.subject] = true; });
+  return Object.keys(seen);
+}
+
+function buildFilter(type, records) {
+  var subjects = getUniqueSubjects(records);
+  var container = document.getElementById(type + '-filter');
+  if (ACTIVE_FILTERS[type] && subjects.indexOf(ACTIVE_FILTERS[type]) === -1) {
+    ACTIVE_FILTERS[type] = null;
+  }
+  var html = '<button class="chip' + (!ACTIVE_FILTERS[type] ? ' active' : '') + '" onclick="setFilter(\'' + type + '\',null)">すべて</button>';
+  subjects.forEach(function(s) {
+    var active = ACTIVE_FILTERS[type] === s ? ' active' : '';
+    html += '<button class="chip' + active + '" onclick="setFilter(\'' + type + '\',\'' + s.replace(/'/g, "\\'") + '\')">' + esc(s) + '</button>';
+  });
+  container.innerHTML = html;
+}
+
+function setFilter(type, subject) {
+  ACTIVE_FILTERS[type] = subject;
+  buildFilter(type, DATA[type]);
+  renderLineChart(type, DATA[type]);
+}
+
+// ════════════════════════════════════════════════════
+//  折れ線グラフ（得点率推移）— zoom対応・試験グループ区切り線付き
+// ════════════════════════════════════════════════════
+function renderLineChart(type, records) {
+  var chartId = type + '-line-chart';
+  if (CHARTS[type + '-line']) { CHARTS[type + '-line'].destroy(); }
+
+  var filter   = ACTIVE_FILTERS[type];
+  var subjects = filter ? [filter] : getUniqueSubjects(records);
+
+  // ユニーク試験キー（date_name）でX軸を構成
+  var examKeys = []; var seenKeys = {};
+  records.forEach(function(r) {
+    var key = r.date + '_' + r.name;
+    if (!seenKeys[key]) {
+      seenKeys[key] = true;
+      examKeys.push({ key: key, date: r.date, name: r.name });
+    }
+  });
+  examKeys.sort(function(a,b){ return a.key.localeCompare(b.key); });
+
+  // X軸ラベル：日付＋改行＋試験名（短縮）
+  var chartLabels = examKeys.map(function(e){
+    var shortName = e.name.length > 10 ? e.name.slice(0,10)+'…' : e.name;
+    return fmtDate(e.date) + '\n' + shortName;
   });
 
-  if(results.length > 1) showBulk(results, t);
-  else if(results.length === 1) { 
-    $(`sel-subj-${t}`).value = results[0].subject; $(`score-${t}`).value = results[0].score;
-    toast('読み込みました');
-  } else toast('文字を認識できませんでした');
-}
+  // 試験グループ区切り線の位置（同じ試験名が連続しているとき新しい試験が始まる箇所）
+  var examBorderIndices = [];
+  for (var bi = 1; bi < examKeys.length; bi++) {
+    if (examKeys[bi].name !== examKeys[bi-1].name) {
+      examBorderIndices.push(bi);
+    }
+  }
 
-function showBulk(list, t) {
-  BULK_TEMP[t] = list;
-  let h = '<tr><th>科</th><th>点</th></tr>';
-  list.forEach((r,i) => h += `<tr><td>${r.subject}</td><td><input type="number" value="${r.score}" id="bk-sc-${t}-${i}" style="width:50px"></td></tr>`);
-  $(`bulk-table-${t}`).innerHTML = h;
-  $(`bulk-ui-${t}`).style.display = 'block';
-}
-
-function submitBulk(t) {
-  BULK_TEMP[t].forEach((r,i) => {
-    r.score = Number($(`bk-sc-${t}-${i}`).value);
-    DATA[t].push({...r, id: Date.now()+i, max: 100});
+  var datasets = subjects.map(function(subj, i) {
+    var color = COLORS[i % COLORS.length];
+    var dataPoints = examKeys.map(function(ek) {
+      var recs = records.filter(function(r){ return r.subject === subj && r.date+'_'+r.name === ek.key; });
+      if (recs.length === 0) return null;
+      return Math.round(recs[0].score / recs[0].max * 100 * 10) / 10;
+    });
+    return {
+      label: subj, data: dataPoints,
+      borderColor: color, backgroundColor: color + '18',
+      borderWidth: 2.5,
+      pointRadius: 6, pointHoverRadius: 9,
+      pointBackgroundColor: color,
+      pointBorderColor: '#fff', pointBorderWidth: 2,
+      tension: 0.25, spanGaps: true
+    };
   });
-  cancelBulk(t); refresh(t); toast('一括登録完了');
+
+  // 試験区切り縦線プラグイン
+  var examDividerPlugin = {
+    id: 'examDivider',
+    afterDraw: function(chart) {
+      if (examBorderIndices.length === 0) return;
+      var ctx2 = chart.ctx;
+      var xScale = chart.scales.x;
+      var ca = chart.chartArea;
+      ctx2.save();
+      examBorderIndices.forEach(function(idx) {
+        var x = xScale.getPixelForValue(idx);
+        ctx2.setLineDash([5, 4]);
+        ctx2.strokeStyle = 'rgba(92,110,130,0.35)';
+        ctx2.lineWidth = 1.5;
+        ctx2.beginPath();
+        ctx2.moveTo(x, ca.top);
+        ctx2.lineTo(x, ca.bottom);
+        ctx2.stroke();
+        // 試験名ラベル
+        var name = examKeys[idx].name;
+        var shortN = name.length > 8 ? name.slice(0,8)+'…' : name;
+        ctx2.setLineDash([]);
+        ctx2.fillStyle = 'rgba(26,127,212,0.75)';
+        ctx2.font = '10px DM Sans, sans-serif';
+        ctx2.textAlign = 'left';
+        ctx2.fillText(shortN, x + 4, ca.top + 14);
+      });
+      ctx2.restore();
+    }
+  };
+
+  var ctx = document.getElementById(chartId).getContext('2d');
+  CHARTS[type + '-line'] = new Chart(ctx, {
+    type: 'line',
+    plugins: [examDividerPlugin],
+    data: { labels: chartLabels, datasets: datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: 'DM Sans', size: 12 }, padding: 16, usePointStyle: true }
+        },
+        tooltip: {
+          callbacks: {
+            title: function(items) {
+              var idx = items[0].dataIndex;
+              return examKeys[idx] ? examKeys[idx].name + '\n' + fmtDate(examKeys[idx].date) : '';
+            },
+            label: function(c) { return ' ' + c.dataset.label + ': ' + (c.parsed.y !== null ? c.parsed.y + '%' : '未受験'); }
+          }
+        },
+        zoom: {
+          pan:  { enabled: true, mode: 'x' },
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#5c6e82', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }
+        },
+        y: {
+          min: 0, max: 100,
+          grid: { color: '#eef3f9' },
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#5c6e82', callback: function(v){ return v + '%'; } }
+        }
+      }
+    }
+  });
 }
 
-function cancelBulk(t) { $(`bulk-ui-${t}`).style.display = 'none'; BULK_TEMP[t] = []; }
+function resetZoom(chartKey) {
+  if (CHARTS[chartKey]) CHARTS[chartKey].resetZoom();
+}
+
+// ════════════════════════════════════════════════════
+//  レーダーチャート（最新試験の科目別得点率）
+// ════════════════════════════════════════════════════
+function renderRadarChart(type, records) {
+  var chartId = type + '-radar-chart';
+  if (CHARTS[type + '-radar']) { CHARTS[type + '-radar'].destroy(); }
+
+  // 最新の試験名を特定
+  var sorted = records.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  var latestDate = sorted[0].date;
+  var latestName = sorted[0].name;
+  var latest = records.filter(function(r){ return r.date === latestDate && r.name === latestName; });
+
+  var subjects = latest.map(function(r){ return r.subject; });
+  var pcts     = latest.map(function(r){ return Math.round(r.score / r.max * 100 * 10) / 10; });
+
+  if (subjects.length < 3) {
+    // 科目が3つ未満だとレーダーが崩れるので折れ線で補完
+    document.getElementById(type + '-radar-card').style.display = 'none';
+    return;
+  }
+
+  var ctx = document.getElementById(chartId).getContext('2d');
+  CHARTS[type + '-radar'] = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: subjects,
+      datasets: [{
+        label: latestName,
+        data: pcts,
+        borderColor: '#1a7fd4',
+        backgroundColor: 'rgba(26,127,212,.15)',
+        borderWidth: 2.5,
+        pointRadius: 5, pointBackgroundColor: '#1a7fd4'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.label + ': ' + c.raw + '%'; } } }
+      },
+      scales: {
+        r: {
+          min: 0, max: 100, ticks: { stepSize: 20, font: { size: 10 }, color: '#5c6e82' },
+          grid: { color: '#dce8f4' }, angleLines: { color: '#dce8f4' },
+          pointLabels: { font: { family: 'DM Sans', size: 12 }, color: '#1a2535' }
+        }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  偏差値推移グラフ（模試専用）
+// ════════════════════════════════════════════════════
+function renderHensachiChart(records) {
+  if (CHARTS['moshi-hensachi']) { CHARTS['moshi-hensachi'].destroy(); }
+  var filtered = records.filter(function(r){ return r.hensachi > 0; });
+  if (filtered.length === 0) return;
+
+  var subjects = getUniqueSubjects(filtered);
+  var examKeys = []; var seenKeys = {};
+  filtered.forEach(function(r) {
+    var key = r.date + '_' + r.name;
+    if (!seenKeys[key]) { seenKeys[key] = true; examKeys.push({ key: key, label: fmtDate(r.date) + ' ' + r.name }); }
+  });
+  examKeys.sort(function(a,b){ return a.key.localeCompare(b.key); });
+
+  var datasets = subjects.map(function(subj, i) {
+    var color = COLORS[i % COLORS.length];
+    return {
+      label: subj,
+      data: examKeys.map(function(ek) {
+        var recs = filtered.filter(function(r){ return r.subject === subj && r.date+'_'+r.name === ek.key; });
+        return recs.length > 0 ? recs[0].hensachi : null;
+      }),
+      borderColor: color, backgroundColor: color + '22',
+      borderWidth: 2.5, pointRadius: 5, tension: 0.3, spanGaps: true
+    };
+  });
+
+  var ctx = document.getElementById('moshi-hensachi-chart').getContext('2d');
+  CHARTS['moshi-hensachi'] = new Chart(ctx, {
+    type: 'line',
+    data: { labels: examKeys.map(function(e){ return e.label; }), datasets: datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 }, padding: 16, usePointStyle: true } },
+        tooltip: { callbacks: { label: function(c){ return ' ' + c.dataset.label + ': 偏差値 ' + c.parsed.y; } } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#5c6e82', maxRotation: 30 } },
+        y: {
+          grid: { color: '#eef3f9' },
+          ticks: { font: { size: 11 }, color: '#5c6e82' },
+          // 参考線 50
+          afterDraw: function(chart) {
+            var ctx2 = chart.ctx;
+            var yScale = chart.scales.y;
+            var y50 = yScale.getPixelForValue(50);
+            ctx2.save();
+            ctx2.setLineDash([4,4]);
+            ctx2.strokeStyle = '#b0c4d8';
+            ctx2.lineWidth = 1.2;
+            ctx2.beginPath();
+            ctx2.moveTo(chart.chartArea.left, y50);
+            ctx2.lineTo(chart.chartArea.right, y50);
+            ctx2.stroke();
+            ctx2.restore();
+          }
+        }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  データ一覧テーブル（編集ボタン付き・試験グループ分け）
+// ════════════════════════════════════════════════════
+function renderTable(type, records) {
+  // 試験ごとにグループ化
+  var groups = {};
+  records.forEach(function(r) {
+    var key = r.date + '_' + r.name;
+    if (!groups[key]) groups[key] = { name: r.name, date: r.date, rows: [] };
+    groups[key].rows.push(r);
+  });
+  // 日付順にソート
+  var groupKeys = Object.keys(groups).sort();
+
+  var html = '';
+  groupKeys.forEach(function(gk) {
+    var g = groups[gk];
+    // グループヘッダー
+    html += '<div style="padding:8px 16px;background:#f0f6ff;border-bottom:1px solid var(--border);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">'
+      + '<span style="font-weight:700;font-size:.85rem;color:var(--navy)">' + esc(g.name) + '</span>'
+      + '<span style="font-size:.72rem;color:var(--muted)">' + esc(fmtDate(g.date)) + ' &nbsp;·&nbsp; ' + g.rows.length + '科目</span>'
+      + '</div>';
+
+    html += '<table class="data-table"><thead><tr>'
+      + '<th>科目</th><th>点数</th><th>得点率</th>'
+      + (type === 'moshi' ? '<th>偏差値</th>' : '<th>順位</th>')
+      + '<th>メモ</th><th style="min-width:80px"></th>'
+      + '</tr></thead><tbody>';
+
+    // 得点率でソート
+    var rows = g.rows.slice().sort(function(a,b){ return (b.score/b.max) - (a.score/a.max); });
+    rows.forEach(function(r) {
+      var pct    = r.score / r.max * 100;
+      var pctStr = Math.round(pct * 10) / 10 + '%';
+      var pctCls = pct >= 90 ? 'pct-s' : pct >= 75 ? 'pct-a' : pct >= 60 ? 'pct-b' : pct >= 40 ? 'pct-c' : 'pct-d';
+      var extraTd = type === 'moshi'
+        ? '<td style="color:var(--muted);font-size:.82rem">' + (r.hensachi > 0 ? r.hensachi : '—') + '</td>'
+        : '<td style="color:var(--muted);font-size:.78rem">' + (r.rank > 0 ? r.rank + '/' + (r.rankTotal||'?') + '位' : '—') + '</td>';
+      var gradeSpan = r.grade ? ' <span style="font-size:.68rem;color:var(--muted)">(' + esc(r.grade) + ')</span>' : '';
+      html += '<tr>'
+        + '<td><strong style="font-size:.88rem">' + esc(r.subject) + '</strong>' + gradeSpan + '</td>'
+        + '<td style="font-size:.88rem">' + r.score + '<span style="color:var(--muted);font-size:.75rem">/' + r.max + '</span></td>'
+        + '<td><span class="score-pct ' + pctCls + '">' + pctStr + '</span></td>'
+        + extraTd
+        + '<td style="font-size:.75rem;color:#8db5d8;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.memo||'') + '</td>'
+        + '<td style="white-space:nowrap">'
+        + '<button class="btn-edit" onclick="openEditModal(\'' + type + '\',' + r.id + ')">✏️ 編集</button>'
+        + '<button class="btn-del" onclick="deleteRecord(\'' + type + '\',' + r.id + ')">削除</button>'
+        + '</td>'
+        + '</tr>';
+    });
+    html += '</tbody></table>';
+  });
+
+  document.getElementById(type + '-table-wrap').innerHTML = html;
+}
+
+// ════════════════════════════════════════════════════
+//  編集モーダル
+// ════════════════════════════════════════════════════
+function openEditModal(type, id) {
+  var rec = DATA[type].find(function(r){ return r.id === id; });
+  if (!rec) return;
+  document.getElementById('edit-type').value    = type;
+  document.getElementById('edit-id').value      = id;
+  document.getElementById('edit-name').value    = rec.name    || '';
+  document.getElementById('edit-date').value    = rec.date    || '';
+  document.getElementById('edit-grade').value   = rec.grade   || '';
+  document.getElementById('edit-subject').value = rec.subject || '';
+  document.getElementById('edit-score').value   = rec.score   !== undefined ? rec.score : '';
+  document.getElementById('edit-max').value     = rec.max     || 100;
+  document.getElementById('edit-rank').value    = rec.rank    || '';
+  document.getElementById('edit-rank-total').value = rec.rankTotal || '';
+  document.getElementById('edit-memo').value    = rec.memo    || '';
+  var hg = document.getElementById('edit-hensachi-group');
+  var he = document.getElementById('edit-hensachi');
+  if (type === 'moshi') {
+    hg.style.display = '';
+    he.value = rec.hensachi || '';
+  } else {
+    hg.style.display = 'none';
+    he.value = '';
+  }
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal(event) {
+  if (event && event.target !== document.getElementById('edit-modal')) return;
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+function saveEdit() {
+  var type = document.getElementById('edit-type').value;
+  var id   = parseInt(document.getElementById('edit-id').value);
+  var rec  = DATA[type].find(function(r){ return r.id === id; });
+  if (!rec) return;
+
+  var name    = document.getElementById('edit-name').value.trim();
+  var date    = document.getElementById('edit-date').value;
+  var subject = document.getElementById('edit-subject').value.trim();
+  var score   = parseFloat(document.getElementById('edit-score').value);
+  var max     = parseFloat(document.getElementById('edit-max').value) || 100;
+  if (!name || !date || !subject || isNaN(score) || score < 0) {
+    alert('試験名・日付・科目・点数は必須です。'); return;
+  }
+
+  rec.name    = name;
+  rec.date    = date;
+  rec.grade   = document.getElementById('edit-grade').value;
+  rec.subject = subject;
+  rec.score   = score;
+  rec.max     = max;
+  rec.rank      = parseInt(document.getElementById('edit-rank').value)       || 0;
+  rec.rankTotal = parseInt(document.getElementById('edit-rank-total').value) || 0;
+  rec.memo    = document.getElementById('edit-memo').value.trim();
+  if (type === 'moshi') {
+    rec.hensachi = parseFloat(document.getElementById('edit-hensachi').value) || 0;
+  }
+
+  DATA[type].sort(function(a,b){ return a.date.localeCompare(b.date) || a.name.localeCompare(b.name); });
+  saveData();
+  updateAll(type);
+  updateHeader();
+  document.getElementById('edit-modal').classList.remove('open');
+  showToast('💾 「' + subject + '」の記録を更新しました');
+}
+
+// ════════════════════════════════════════════════════
+//  OCR 一括登録
+// ════════════════════════════════════════════════════
+function buildBulkSubjectSelect() {
+  var html = '<option value="">科目を選択</option>';
+  Object.keys(SUBJECTS).forEach(function(group) {
+    html += '<optgroup label="' + esc(group) + '">';
+    SUBJECTS[group].forEach(function(s){ html += '<option value="' + esc(s) + '">' + esc(s) + '</option>'; });
+    html += '</optgroup>';
+  });
+  html += '<optgroup label="その他"><option value="other">その他（手入力）</option></optgroup>';
+  return html;
+}
+
+function showBulkPanel(type, items) {
+  // items: [{ name, date, subject, score, max, hensachi, rank, rankTotal }]
+  BULK_BUFFER[type] = items;
+  var container = document.getElementById('ocr-bulk-items-' + type);
+  var subjSelHtml = buildBulkSubjectSelect();
+  var today = new Date().toISOString().slice(0,10);
+  var html = '';
+  items.forEach(function(item, idx) {
+    var subj = item.subject || '';
+    html += '<div class="ocr-bulk-item" id="bulk-item-' + type + '-' + idx + '">';
+    html += '<div class="ocr-bulk-item-header"><div class="ocr-bulk-num">' + (idx+1) + '</div>';
+    html += '<div class="ocr-bulk-name">' + esc(item.name || ('テスト' + (idx+1))) + '</div></div>';
+    html += '<div class="ocr-bulk-grid">';
+    html += '<div class="ocr-bulk-field"><label>試験名</label><input type="text" id="bulk-name-' + type + '-' + idx + '" value="' + esc(item.name||'') + '"></div>';
+    html += '<div class="ocr-bulk-field"><label>日付</label><input type="date" id="bulk-date-' + type + '-' + idx + '" value="' + esc(item.date||today) + '"></div>';
+    html += '<div class="ocr-bulk-field" style="grid-column:1/-1"><label>科目</label><select id="bulk-subj-' + type + '-' + idx + '" onchange="bulkSubjChange(\'' + type + '\',' + idx + ')">' + subjSelHtml + '</select>'
+      + '<input type="text" id="bulk-subj-custom-' + type + '-' + idx + '" placeholder="科目名を手入力" style="margin-top:5px;display:' + (subj ? 'none' : 'none') + '"></div>';
+    html += '<div class="ocr-bulk-field"><label>点数</label><input type="number" id="bulk-score-' + type + '-' + idx + '" value="' + (item.score !== undefined ? item.score : '') + '" min="0" step="0.5"></div>';
+    html += '<div class="ocr-bulk-field"><label>満点</label><input type="number" id="bulk-max-' + type + '-' + idx + '" value="' + (item.max || (type==='teiki'?100:200)) + '"></div>';
+    if (type === 'moshi') {
+      html += '<div class="ocr-bulk-field"><label>偏差値</label><input type="number" id="bulk-hensachi-' + type + '-' + idx + '" value="' + (item.hensachi||'') + '" step="0.1"></div>';
+    }
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+
+  // プルダウンに科目をセット
+  items.forEach(function(item, idx) {
+    var sel = document.getElementById('bulk-subj-' + type + '-' + idx);
+    if (!sel) return;
+    var subj = item.subject || '';
+    var found = false;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === subj) { sel.value = subj; found = true; break; }
+    }
+    if (!found && subj) {
+      sel.value = 'other';
+      var custom = document.getElementById('bulk-subj-custom-' + type + '-' + idx);
+      if (custom) { custom.style.display = ''; custom.value = subj; }
+    }
+  });
+
+  document.getElementById('ocr-bulk-' + type).classList.add('show');
+  document.getElementById('ocr-bulk-' + type).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function bulkSubjChange(type, idx) {
+  var sel    = document.getElementById('bulk-subj-' + type + '-' + idx);
+  var custom = document.getElementById('bulk-subj-custom-' + type + '-' + idx);
+  if (sel.value === 'other') { custom.style.display = ''; custom.focus(); }
+  else { custom.style.display = 'none'; }
+}
+
+function bulkRegister(type) {
+  var items = BULK_BUFFER[type];
+  if (!items || items.length === 0) return;
+  var added = 0;
+  var errors = [];
+  items.forEach(function(item, idx) {
+    var name  = (document.getElementById('bulk-name-'  + type + '-' + idx)||{}).value || item.name || '';
+    var date  = (document.getElementById('bulk-date-'  + type + '-' + idx)||{}).value || '';
+    var sel   = document.getElementById('bulk-subj-' + type + '-' + idx);
+    var subj  = sel ? (sel.value === 'other'
+      ? ((document.getElementById('bulk-subj-custom-' + type + '-' + idx)||{}).value||'').trim()
+      : sel.value) : (item.subject || '');
+    var score = parseFloat((document.getElementById('bulk-score-' + type + '-' + idx)||{}).value);
+    var max   = parseFloat((document.getElementById('bulk-max-'   + type + '-' + idx)||{}).value) || (type==='teiki'?100:200);
+
+    if (!name || !date || !subj || isNaN(score) || score < 0) {
+      errors.push(idx + 1); return;
+    }
+    var rec = { id: Date.now() + idx, name: name, date: date, grade: '', subject: subj, score: score, max: max, memo: '' };
+    if (type === 'moshi') {
+      rec.hensachi = parseFloat((document.getElementById('bulk-hensachi-' + type + '-' + idx)||{}).value) || 0;
+    }
+    rec.rank = 0; rec.rankTotal = 0;
+    DATA[type].push(rec);
+    added++;
+  });
+
+  if (errors.length > 0) {
+    alert('No.' + errors.join('、') + ' の入力が不完全です。試験名・日付・科目・点数を確認してください。');
+    return;
+  }
+  DATA[type].sort(function(a,b){ return a.date.localeCompare(b.date) || a.name.localeCompare(b.name); });
+  saveData();
+  updateAll(type);
+  updateHeader();
+  document.getElementById('ocr-bulk-' + type).classList.remove('show');
+  BULK_BUFFER[type] = [];
+  showToast('✅ ' + added + '件の記録をまとめて登録しました');
+}
+
+// ════════════════════════════════════════════════════
+//  OCR — Tesseract.js 実装
+// ════════════════════════════════════════════════════
+
+// Tesseract Workerのキャッシュ（再初期化コスト削減）
+var ocrWorker = null;
+var ocrWorkerReady = false;
+var ocrWorkerLoading = false;
+
+// OCRエリアのクリック制御（実行中は無視）
+function ocrAreaClick(event, type) {
+  if (document.getElementById('ocr-' + type).classList.contains('ocr-running')) return;
+  document.getElementById('ocr-input-' + type).click();
+}
+
+// Worker初期化（初回のみ）
+function getOcrWorker() {
+  return new Promise(function(resolve, reject) {
+    if (ocrWorker && ocrWorkerReady) { resolve(ocrWorker); return; }
+    if (ocrWorkerLoading) {
+      // ポーリングで待機
+      var poll = setInterval(function() {
+        if (ocrWorkerReady) { clearInterval(poll); resolve(ocrWorker); }
+      }, 300);
+      return;
+    }
+    ocrWorkerLoading = true;
+    try {
+      // Tesseract.js v5 API
+      Tesseract.createWorker('jpn+eng', 1, {
+        logger: function(m) {
+          if (m.status === 'recognizing text') {
+            window._ocrProgress = m.progress;
+          }
+        }
+      }).then(function(worker) {
+        ocrWorker = worker;
+        ocrWorkerReady = true;
+        ocrWorkerLoading = false;
+        resolve(ocrWorker);
+      }).catch(function(e) {
+        ocrWorkerLoading = false;
+        reject(e);
+      });
+    } catch(e) {
+      ocrWorkerLoading = false;
+      reject(e);
+    }
+  });
+}
+
+// ファイル選択イベント
+function handleImageSelect(event, type) {
+  var file = event.target.files[0];
+  if (!file) return;
+  runOcr(file, type);
+  // 同じファイルを再選択できるようvalueをリセット
+  event.target.value = '';
+}
+
+// ドロップ
+function handleDrop(event, type) {
+  event.preventDefault();
+  document.getElementById('ocr-' + type).classList.remove('drag-over');
+  var file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) {
+    showToast('⚠️ 画像ファイル（JPG/PNG等）を選択してください');
+    return;
+  }
+  runOcr(file, type);
+}
+
+// メインOCR処理
+function runOcr(file, type) {
+  var area        = document.getElementById('ocr-' + type);
+  var idleDiv     = document.getElementById('ocr-idle-' + type);
+  var previewWrap = document.getElementById('ocr-preview-wrap-' + type);
+  var preview     = document.getElementById('ocr-preview-' + type);
+  var overlay     = document.getElementById('ocr-overlay-' + type);
+  var overlayLbl  = document.getElementById('ocr-overlay-label-' + type);
+  var progressWrap= document.getElementById('ocr-progress-' + type);
+  var fill        = document.getElementById('ocr-fill-' + type);
+  var ptext       = document.getElementById('ocr-ptext-' + type);
+  var resultPanel = document.getElementById('ocr-result-' + type);
+  var resultHdr   = document.getElementById('ocr-result-hdr-' + type);
+  var resultMsg   = document.getElementById('ocr-result-msg-' + type);
+  var rawBox      = document.getElementById('ocr-raw-' + type);
+
+  // プレビュー表示
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    preview.src = e.target.result;
+    idleDiv.style.display = 'none';
+    previewWrap.style.display = 'block';
+    overlay.classList.remove('hide');
+    overlayLbl.textContent = 'モデル読み込み中…';
+    area.classList.add('ocr-running');
+    progressWrap.classList.add('show');
+    resultPanel.classList.remove('show');
+    fill.style.width = '0%';
+    ptext.textContent = '0%';
+
+    // プログレス更新タイマー
+    window._ocrProgress = 0;
+    var progTimer = setInterval(function() {
+      var pct = Math.round((window._ocrProgress || 0) * 100);
+      fill.style.width = pct + '%';
+      ptext.textContent = pct + '%';
+      if (pct >= 5) overlayLbl.textContent = '文字認識中… ' + pct + '%';
+    }, 200);
+
+    getOcrWorker().then(function(worker) {
+      overlayLbl.textContent = '文字認識中…';
+      return worker.recognize(e.target.result);
+    }).then(function(result) {
+      clearInterval(progTimer);
+      fill.style.width = '100%';
+      ptext.textContent = '100%';
+      overlay.classList.add('hide');
+      area.classList.remove('ocr-running');
+
+      var text = result.data.text;
+      rawBox.textContent = text;
+
+      // ── 複数テスト検出を優先試行 ──
+      var bulkItems = detectMultipleExams(text, type);
+      if (bulkItems.length >= 2) {
+        // 複数テストが見つかった → 一括確認パネルへ
+        overlay.classList.add('hide');
+        area.classList.remove('ocr-running');
+        progressWrap.classList.remove('show');
+        resultPanel.classList.add('show');
+        resultHdr.className = 'ocr-result-header';
+        resultMsg.textContent = '📊 ' + bulkItems.length + '件のテストを検出しました — 下で内容を確認してから登録してください';
+        showBulkPanel(type, bulkItems);
+        showToast('📷 OCR完了 — ' + bulkItems.length + '件を検出しました');
+      } else {
+        // 単一テスト → 従来どおりフォームに流し込む
+        var parsed = parseOcrText(text, type);
+        applyToForm(parsed, type);
+
+        var filled = Object.values(parsed).filter(function(v){ return v && v.val && v.conf !== 'none'; }).length;
+        var total  = Object.keys(parsed).length;
+        resultPanel.classList.add('show');
+        if (filled >= Math.floor(total * 0.6)) {
+          resultHdr.className = 'ocr-result-header';
+          resultMsg.textContent = '✅ ' + filled + ' / ' + total + ' 項目を自動入力しました — 黄色の欄を確認してください';
+        } else if (filled > 0) {
+          resultHdr.className = 'ocr-result-header warn';
+          resultMsg.textContent = '⚠️ ' + filled + ' / ' + total + ' 項目を読み取り済 — 赤色の欄を手入力してください';
+        } else {
+          resultHdr.className = 'ocr-result-header error';
+          resultMsg.textContent = '❌ 文字を読み取れませんでした。手入力してください';
+        }
+        showToast('📷 OCR完了 — フォームを確認してください');
+      }
+
+    }).catch(function(err) {
+      clearInterval(progTimer);
+      overlay.classList.add('hide');
+      area.classList.remove('ocr-running');
+      progressWrap.classList.remove('show');
+      resultPanel.classList.add('show');
+      resultHdr.className = 'ocr-result-header error';
+      resultMsg.textContent = '❌ OCR処理に失敗しました: ' + (err.message || err);
+      rawBox.textContent = err.toString();
+      rawBox.classList.add('show');
+      showToast('❌ OCRに失敗しました。手入力してください');
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── 生テキスト表示切替 ──
+function toggleRaw(type) {
+  var box = document.getElementById('ocr-raw-' + type);
+  box.classList.toggle('show');
+}
+
+// ════════════════════════════════════════════════════
+//  OCRテキスト解析エンジン
+// ════════════════════════════════════════════════════
+
+// 全科目フラットリスト（マッチング用）
+var ALL_SUBJECTS_FLAT = (function() {
+  var flat = [];
+  Object.keys(SUBJECTS).forEach(function(g) {
+    SUBJECTS[g].forEach(function(s) { flat.push(s); });
+  });
+  return flat;
+})();
+
+function parseOcrText(text, type) {
+  var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+  var full  = text;
+
+  var result = {};
+
+  // ── 1. 試験名の推定 ──
+  result.name = detectExamName(full, lines, type);
+
+  // ── 2. 日付 ──
+  result.date = detectDate(full, lines);
+
+  // ── 3. 学年 ──
+  result.grade = detectGrade(full, lines);
+
+  // ── 4. 科目 ──
+  result.subject = detectSubject(full, lines);
+
+  // ── 5. 点数・満点 ──
+  var scores = detectScores(full, lines, type);
+  result.score = scores.score;
+  result.max   = scores.max;
+
+  // ── 6. 偏差値（模試のみ） ──
+  if (type === 'moshi') {
+    result.hensachi = detectHensachi(full, lines);
+  }
+
+  // ── 7. 順位 ──
+  var rank = detectRank(full, lines);
+  result.rank      = rank.rank;
+  result.rankTotal = rank.total;
+
+  return result;
+}
+
+// ── 試験名 ──
+function detectExamName(text, lines, type) {
+  // 定期テスト系キーワード
+  var teikiPatterns = [
+    { re: /[1１一]学期[　\s]*中間/,  name: '1学期中間考査' },
+    { re: /[1１一]学期[　\s]*期末/,  name: '1学期期末考査' },
+    { re: /[2２二]学期[　\s]*中間/,  name: '2学期中間考査' },
+    { re: /[2２二]学期[　\s]*期末/,  name: '2学期期末考査' },
+    { re: /[3３三]学期[　\s]*期末/,  name: '3学期期末考査' },
+    { re: /前期[　\s]*中間/,        name: '前期中間考査' },
+    { re: /前期[　\s]*期末/,        name: '前期期末考査' },
+    { re: /後期[　\s]*中間/,        name: '後期中間考査' },
+    { re: /後期[　\s]*期末/,        name: '後期期末考査' },
+    { re: /中間[考試テ]/,           name: '中間考査' },
+    { re: /期末[考試テ]/,           name: '期末考査' },
+    { re: /確認[テス]*[トト]/,      name: '確認テスト' },
+    { re: /小[テス]*[トト]/,        name: '小テスト' },
+    { re: /実力[テス]*[トト]/,      name: '実力テスト' },
+    { re: /定期[考試テ]/,           name: '定期考査' }
+  ];
+  // 模試系キーワード
+  var moshiPatterns = [
+    { re: /全統[　\s]*共通/,           name: '全統共通テスト模試' },
+    { re: /全統[　\s]*記述/,           name: '全統記述模試' },
+    { re: /全統[　\s]*高[12１２]/,     name: '全統高1・2模試' },
+    { re: /駿台[　\s]*全国/,           name: '駿台全国模試' },
+    { re: /駿台[　\s]*共通/,           name: '駿台共通テスト模試' },
+    { re: /進研[　\s]*共通/,           name: '進研模試（共通テスト模試）' },
+    { re: /進研[　\s]*記述/,           name: '進研模試（記述）' },
+    { re: /進研[模もし]/,             name: '進研模試（共通テスト模試）' },
+    { re: /共通テスト[本レベ]/,        name: '共通テスト本番レベル模試' },
+    { re: /ベネッセ/,                  name: '進研模試（共通テスト模試）' }
+  ];
+
+  var patterns = (type === 'teiki') ? teikiPatterns : moshiPatterns;
+  for (var i = 0; i < patterns.length; i++) {
+    if (patterns[i].re.test(text)) {
+      return { val: patterns[i].name, conf: 'high' };
+    }
+  }
+  // タイプに関わらず逆もチェック（間違ったタブで撮った場合の救済）
+  var alt = (type === 'teiki') ? moshiPatterns : teikiPatterns;
+  for (var j = 0; j < alt.length; j++) {
+    if (alt[j].re.test(text)) {
+      return { val: alt[j].name, conf: 'low' };
+    }
+  }
+  // 最初の行が15文字以下なら試験名っぽい
+  if (lines.length > 0 && lines[0].length <= 20 && /[ぁ-ん一-龯ァ-ン]/.test(lines[0])) {
+    return { val: lines[0], conf: 'low' };
+  }
+  return { val: '', conf: 'none' };
+}
+
+// ── 日付 ──
+function detectDate(text) {
+  // 令和/平成/西暦 各種パターン
+  var patterns = [
+    // 令和○年○月○日
+    { re: /令和\s*(\d{1,2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/, fn: function(m){ return reiwaToDate(parseInt(m[1]), parseInt(m[2]), parseInt(m[3])); } },
+    // R○.○.○ / R○/○/○
+    { re: /[Rr]\s*(\d{1,2})[.\\/年]\s*(\d{1,2})[.\\/月]\s*(\d{1,2})/, fn: function(m){ return reiwaToDate(parseInt(m[1]), parseInt(m[2]), parseInt(m[3])); } },
+    // 20XX年○月○日
+    { re: /(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/, fn: function(m){ return padDate(m[1], m[2], m[3]); } },
+    // 20XX/○/○ または 20XX-○-○
+    { re: /(20\d{2})[\/\-](\d{1,2})[\/\-](\d{1,2})/, fn: function(m){ return padDate(m[1], m[2], m[3]); } },
+    // ○月○日（年なし）→ 今年を付与
+    { re: /(\d{1,2})\s*月\s*(\d{1,2})\s*日/, fn: function(m){ return padDate(new Date().getFullYear(), m[1], m[2]); } }
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var mt = text.match(patterns[i].re);
+    if (mt) {
+      var d = patterns[i].fn(mt);
+      if (d) return { val: d, conf: 'high' };
+    }
+  }
+  return { val: '', conf: 'none' };
+}
+
+function reiwaToDate(r, m, d) {
+  var year = r + 2018; // 令和1年=2019年
+  return padDate(year, m, d);
+}
+function padDate(y, m, d) {
+  return String(y) + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+}
+
+// ── 学年 ──
+function detectGrade(text) {
+  var m;
+  if ((m = text.match(/高[校等]?\s*[1１一]/))) return { val: '高1', conf: 'high' };
+  if ((m = text.match(/高[校等]?\s*[2２二]/))) return { val: '高2', conf: 'high' };
+  if ((m = text.match(/高[校等]?\s*[3３三]/))) return { val: '高3', conf: 'high' };
+  if ((m = text.match(/中[学学]?\s*[1１一]/))) return { val: '中1', conf: 'high' };
+  if ((m = text.match(/中[学学]?\s*[2２二]/))) return { val: '中2', conf: 'high' };
+  if ((m = text.match(/中[学学]?\s*[3３三]/))) return { val: '中3', conf: 'high' };
+  // 学年のみ（数字単独）
+  if (/[1１一]年/.test(text) && /高|HS/i.test(text)) return { val: '高1', conf: 'low' };
+  if (/[2２二]年/.test(text) && /高|HS/i.test(text)) return { val: '高2', conf: 'low' };
+  if (/[3３三]年/.test(text) && /高|HS/i.test(text)) return { val: '高3', conf: 'low' };
+  return { val: '', conf: 'none' };
+}
+
+// ── 科目 ──
+function detectSubject(text) {
+  // 長いほど具体的なのでソートして先にマッチ
+  var sorted = ALL_SUBJECTS_FLAT.slice().sort(function(a,b){ return b.length - a.length; });
+  for (var i = 0; i < sorted.length; i++) {
+    var s = sorted[i];
+    // 科目名の各文字をエスケープして正規表現化（・は無視OK）
+    var escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[・]/g, '[・\\s]?');
+    if (new RegExp(escaped).test(text)) {
+      return { val: s, conf: 'high' };
+    }
+  }
+  // 簡易マッピング（OCRが崩れた場合のフォールバック）
+  var quick = [
+    [/英語|英[Ee]nglish|[Ee]ng/i, '英語コミュニケーションI'],
+    [/国語|現代の国語|国[Ll]ang/i, '現代の国語'],
+    [/数[学II]{1,3}|[Mm]ath/i, '数学I'],
+    [/物[理理]/i, '物理基礎'],
+    [/化[学学]/i, '化学基礎'],
+    [/生[物物]/i, '生物基礎'],
+    [/地[学学]/i, '地学基礎'],
+    [/歴[史史]/i, '歴史総合'],
+    [/地[理理][総探]/i, '地理総合'],
+    [/公[共共]/i, '公共'],
+    [/情[報報]/i, '情報I']
+  ];
+  for (var j = 0; j < quick.length; j++) {
+    if (quick[j][0].test(text)) return { val: quick[j][1], conf: 'low' };
+  }
+  return { val: '', conf: 'none' };
+}
+
+// ── 点数・満点 ──
+function detectScores(text, lines, type) {
+  var score = { val: '', conf: 'none' };
+  var max   = { val: type === 'teiki' ? '100' : '200', conf: 'default' };
+
+  // パターン1: ○点/○○点 (点という字つき)
+  var m1 = text.match(/(\d{1,3}(?:\.\d)?)\s*[点てﾃ]/);
+  if (m1) {
+    score = { val: m1[1], conf: 'high' };
+  }
+
+  // パターン2: ○/○○ (スラッシュ区切り)
+  var m2 = text.match(/(\d{1,3}(?:\.\d)?)\s*[\/／]\s*(\d{2,3})/);
+  if (m2) {
+    score = { val: m2[1], conf: 'high' };
+    max   = { val: m2[2], conf: 'high' };
+  }
+
+  // パターン3: 得点: ○○ / 素点: ○○
+  var m3 = text.match(/(?:得点|素点|点数)[：:\s]*(\d{1,3}(?:\.\d)?)/);
+  if (m3) score = { val: m3[1], conf: 'high' };
+
+  // パターン4: 満点○○
+  var m4 = text.match(/満点[：:\s]*(\d{2,3})/);
+  if (m4) max = { val: m4[1], conf: 'high' };
+
+  // パターン5: 行の中の数字のみ行（60〜200の範囲で最も確からしいもの）
+  if (!score.val) {
+    for (var i = 0; i < lines.length; i++) {
+      var n = parseFloat(lines[i].replace(/[^0-9.]/g,''));
+      if (!isNaN(n) && n >= 0 && n <= 200) {
+        score = { val: String(n), conf: 'low' };
+        break;
+      }
+    }
+  }
+
+  return { score: score, max: max };
+}
+
+// ── 偏差値 ──
+function detectHensachi(text) {
+  var m;
+  // 偏差値: ○○.○
+  if ((m = text.match(/偏差値[：:\s]*(\d{2}(?:\.\d)?)/))) return { val: m[1], conf: 'high' };
+  // 数字が40〜80の範囲でdotつき
+  if ((m = text.match(/\b([4-7]\d\.\d)\b/))) return { val: m[1], conf: 'low' };
+  return { val: '', conf: 'none' };
+}
+
+// ── 順位 ──
+function detectRank(text) {
+  var rank = { val: '', conf: 'none' };
+  var total = { val: '', conf: 'none' };
+  var m;
+  // 順位 ○ / ○○○ 人中
+  if ((m = text.match(/順位[：:\s]*(\d+)\s*[\/／]\s*(\d+)/))) {
+    rank  = { val: m[1], conf: 'high' };
+    total = { val: m[2], conf: 'high' };
+  } else if ((m = text.match(/(\d+)\s*位\s*[\/／]\s*(\d+)\s*人?/))) {
+    rank  = { val: m[1], conf: 'high' };
+    total = { val: m[2], conf: 'high' };
+  } else if ((m = text.match(/順位[：:\s]*(\d+)/))) {
+    rank = { val: m[1], conf: 'high' };
+  } else if ((m = text.match(/(\d+)\s*位/))) {
+    rank = { val: m[1], conf: 'low' };
+  }
+  if (!total.val && (m = text.match(/(\d{2,4})\s*人中/))) {
+    total = { val: m[1], conf: 'high' };
+  }
+  return { rank: rank, total: total };
+}
+
+// ════════════════════════════════════════════════════
+//  フォームへの自動マッピング
+// ════════════════════════════════════════════════════
+function applyToForm(parsed, type) {
+  // 試験名
+  if (type === 'teiki') {
+    setField('teiki-name', parsed.name);
+  } else {
+    // 模試名をプルダウンに当てる
+    setMoshiNameField(parsed.name);
+  }
+  // 日付
+  setField(type + '-date', parsed.date);
+  // 学年
+  if (parsed.grade && parsed.grade.val) {
+    var gradeEl = document.getElementById(type + '-grade');
+    gradeEl.value = parsed.grade.val;
+    applyFieldStyle(gradeEl, parsed.grade.conf);
+  }
+  // 科目
+  setSubjectField(type, parsed.subject);
+  // 点数
+  setField(type + '-score', parsed.score);
+  setField(type + '-max',   parsed.max);
+  // 偏差値（模試）
+  if (type === 'moshi' && parsed.hensachi) {
+    setField('moshi-hensachi', parsed.hensachi);
+  }
+  // 順位
+  setField(type + '-rank',       parsed.rank);
+  setField(type + '-rank-total', parsed.rankTotal);
+}
+
+function setField(id, item) {
+  if (!item) return;
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (item.val !== undefined && item.val !== '') {
+    el.value = item.val;
+  }
+  applyFieldStyle(el, item.conf);
+  setFieldNote(el, item.conf);
+}
+
+function applyFieldStyle(el, conf) {
+  el.classList.remove('ocr-filled','ocr-uncertain','ocr-empty');
+  if (conf === 'high')    el.classList.add('ocr-filled');
+  else if (conf === 'low' || conf === 'default') el.classList.add('ocr-uncertain');
+  else if (conf === 'none') el.classList.add('ocr-empty');
+}
+
+function setFieldNote(el, conf) {
+  // 既存ノートを削除
+  var next = el.nextElementSibling;
+  if (next && next.classList && next.classList.contains('ocr-field-note')) next.remove();
+  var note = document.createElement('div');
+  note.className = 'ocr-field-note';
+  if (conf === 'high') {
+    note.className += ' ok'; note.textContent = '✓ 自動入力';
+  } else if (conf === 'low') {
+    note.className += ' warn'; note.textContent = '△ 要確認（OCR推定値）';
+  } else if (conf === 'default') {
+    note.className += ' warn'; note.textContent = '△ デフォルト値 — 必要に応じて変更';
+  } else {
+    note.className += ' err'; note.textContent = '✕ 読み取り不可 — 手入力してください';
+  }
+  el.parentNode.insertBefore(note, el.nextSibling);
+  // 3秒後にokノートは消去
+  if (conf === 'high') {
+    setTimeout(function(){ if (note.parentNode) note.remove(); }, 4000);
+  }
+}
+
+function setSubjectField(type, item) {
+  if (!item) return;
+  var sel = document.getElementById(type + '-subject-sel');
+  var custom = document.getElementById(type + '-subject-custom');
+  if (item.val) {
+    // プルダウンに存在するか確認
+    var found = false;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === item.val) { found = true; break; }
+    }
+    if (found) {
+      sel.value = item.val;
+      CUSTOM_MODE[type] = false;
+      sel.style.display = '';
+      custom.style.display = 'none';
+      applyFieldStyle(sel, item.conf);
+      setFieldNote(sel, item.conf);
+    } else {
+      // プルダウンにない → 手入力欄に
+      custom.value = item.val;
+      CUSTOM_MODE[type] = true;
+      sel.style.display = 'none';
+      custom.style.display = 'block';
+      document.getElementById(type + '-toggle-btn').textContent = 'プルダウン';
+      applyFieldStyle(custom, item.conf);
+      setFieldNote(custom, item.conf);
+    }
+  } else {
+    applyFieldStyle(custom, 'none');
+  }
+}
+
+function setMoshiNameField(item) {
+  if (!item) return;
+  var sel = document.getElementById('moshi-name-sel');
+  var custom = document.getElementById('moshi-name-custom');
+  if (item.val) {
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === item.val) {
+        sel.value = item.val;
+        custom.style.display = 'none';
+        return;
+      }
+    }
+    // 見つからない場合
+    sel.value = 'other';
+    custom.value = item.val;
+    custom.style.display = 'block';
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  複数テスト検出（手書き表・一覧形式）
+// ════════════════════════════════════════════════════
+function detectMultipleExams(text, type) {
+  var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+  var results = [];
+  var today = new Date().toISOString().slice(0,10);
+
+  // ── 戦略1: 科目＋点数のペアを行単位でスキャン（表形式）──
+  // 例: 「英語  85/100」「数学I 72」「国語 68点」
+  var subjectScoreRe = /^(.{2,16}?)\s+(\d{1,3}(?:\.\d)?)\s*[\/／点]?\s*(\d{2,3})?/;
+
+  // 全体から日付・テスト名を先に取得
+  var globalDate    = detectDate(text);
+  var globalGrade   = detectGrade(text);
+  var examNameBase  = detectExamName(text, lines, type);
+  var baseName      = examNameBase.val || (type === 'teiki' ? '定期テスト' : '模試');
+  var baseDate      = globalDate.val || today;
+
+  // 科目ごとの点数行を抽出
+  var scoreRows = [];
+  lines.forEach(function(line) {
+    // 科目候補が含まれるか
+    var matchedSubj = null;
+    var matchedScore = null;
+    var matchedMax = null;
+
+    // 既知科目名が含まれるかチェック
+    var sortedSubjs = ALL_SUBJECTS_FLAT.slice().sort(function(a,b){ return b.length - a.length; });
+    for (var i = 0; i < sortedSubjs.length; i++) {
+      var s = sortedSubjs[i];
+      var escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[・]/g, '[・\\s]?');
+      var re = new RegExp(escaped);
+      if (re.test(line)) {
+        matchedSubj = s;
+        // 点数を取得
+        var nums = line.match(/(\d{1,3}(?:\.\d)?)\s*[\/／]\s*(\d{2,3})/);
+        if (nums) { matchedScore = parseFloat(nums[1]); matchedMax = parseFloat(nums[2]); }
+        else {
+          var n = line.match(/(\d{1,3}(?:\.\d)?)\s*点/);
+          if (n) matchedScore = parseFloat(n[1]);
+          else {
+            var n2 = line.replace(escaped,'').match(/\b(\d{1,3}(?:\.\d)?)\b/);
+            if (n2 && parseFloat(n2[1]) <= 200) matchedScore = parseFloat(n2[1]);
+          }
+        }
+        break;
+      }
+    }
+    if (matchedSubj && matchedScore !== null && !isNaN(matchedScore)) {
+      scoreRows.push({ subject: matchedSubj, score: matchedScore, max: matchedMax || (type==='teiki'?100:200) });
+    }
+  });
+
+  // 3科目以上抽出できれば複数テスト検出とみなす
+  if (scoreRows.length >= 3) {
+    // 全部を同一テストの科目として一括パネルへ
+    scoreRows.forEach(function(row, idx) {
+      results.push({
+        name: baseName,
+        date: baseDate,
+        subject: row.subject,
+        score: row.score,
+        max: row.max,
+        hensachi: 0, rank: 0, rankTotal: 0
+      });
+    });
+    return results;
+  }
+
+  // ── 戦略2: テスト名が複数ある場合（別々の試験が並んでいる）──
+  var teikiNames = [
+    '1学期中間考査','1学期期末考査','2学期中間考査','2学期期末考査',
+    '3学期期末考査','前期中間考査','前期期末考査','後期中間考査','後期期末考査',
+    '中間考査','期末考査','確認テスト','実力テスト'
+  ];
+  var foundExamBlocks = [];
+  teikiNames.forEach(function(tName) {
+    if (text.indexOf(tName) !== -1) {
+      foundExamBlocks.push(tName);
+    }
+  });
+
+  if (foundExamBlocks.length >= 2) {
+    // 各テスト名のブロックを取得
+    foundExamBlocks.forEach(function(eName, eIdx) {
+      // そのテスト名周辺のテキストから点数を取得
+      var pos = text.indexOf(eName);
+      var block = text.slice(pos, pos + 200);
+      var blockLines = block.split('\n');
+      blockLines.forEach(function(bl) {
+        bl = bl.trim();
+        var sortedS = ALL_SUBJECTS_FLAT.slice().sort(function(a,b){ return b.length - a.length; });
+        for (var i = 0; i < sortedS.length; i++) {
+          var s = sortedS[i];
+          var esc2 = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          if (new RegExp(esc2).test(bl)) {
+            var nums2 = bl.match(/(\d{1,3}(?:\.\d)?)\s*[\/／]\s*(\d{2,3})/);
+            var sc = null; var mx = type==='teiki'?100:200;
+            if (nums2) { sc = parseFloat(nums2[1]); mx = parseFloat(nums2[2]); }
+            else { var nn = bl.match(/(\d{1,3}(?:\.\d)?)/); if(nn && parseFloat(nn[1])<=200) sc = parseFloat(nn[1]); }
+            if (sc !== null && !isNaN(sc)) {
+              results.push({ name: eName, date: baseDate, subject: s, score: sc, max: mx, hensachi:0, rank:0, rankTotal:0 });
+            }
+            break;
+          }
+        }
+      });
+    });
+    if (results.length >= 2) return results;
+  }
+
+  return []; // 複数検出できなかった
+}
+
+// ════════════════════════════════════════════════════
+//  ユーティリティ
+// ════════════════════════════════════════════════════
+function fmtDate(s) {
+  if (!s) return '';
+  var p = s.split('-');
+  return p[0] + '/' + p[1] + '/' + p[2];
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
 </script>
 </body>
 </html>
