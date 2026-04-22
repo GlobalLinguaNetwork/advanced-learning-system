@@ -406,7 +406,8 @@ var backBtn = document.getElementById('back-btn');
 if (sid) backBtn.href = 'index.html?id=' + encodeURIComponent(sid);
 
 // ── メインロード ──
-if (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
+// ★ IDが「A001」の場合は自動的にデモモードを呼び出す
+if (sid === 'A001' || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
   loadDemo();
 } else {
   loadReal();
@@ -426,7 +427,7 @@ function loadReal() {
 }
 
 // ══════════════════════════════════════════════
-//  デモデータ (URL 未設定時の表示確認用)
+//  デモデータ (A001指定時 または URL未設定時の表示確認用)
 // ══════════════════════════════════════════════
 function loadDemo() {
   var demoData = {
@@ -452,10 +453,17 @@ function loadDemo() {
       { date:'2025-05-20', task:'VOA Article',          cat:'Reading',   status:'完了', words:820,  duration:17, detail:'Economy Report' },
       { date:'2025-05-20', task:'ESL Lab',              cat:'Listening', status:'完了', words:700,  duration:20, detail:'' }
     ],
-    updated: '2025-05-24 09:15'
+    updated: new Date().toLocaleDateString('ja-JP') + ' ' + new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'})
   };
-  // デモ注記
-  showError('⚠️ デモモード表示中 — <code>APPS_SCRIPT_URL</code> を設定すると実データが表示されます。', 'warn');
+
+  // デモ注記（A001の場合は専用メッセージと氏名に変更）
+  if (sid === 'A001') {
+    showError('🚀 <strong>デモアカウント「A001」のサンプルデータを表示しています。</strong>', 'warn');
+    demoData.name = '国公立 志望（A001デモ）';
+  } else {
+    showError('⚠️ デモモード表示中 — <code>APPS_SCRIPT_URL</code> を設定すると実データが表示されます。', 'warn');
+  }
+
   render(demoData);
 }
 

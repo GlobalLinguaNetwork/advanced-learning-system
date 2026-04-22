@@ -64,6 +64,10 @@ header h1 em { font-style: italic; color: #a8cef0; }
 }
 .meta-pill strong { color: #fff; }
 
+/* デモ用ヘッダー入力欄 CSS */
+#student-id-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+#student-id-input:focus { border-color: var(--gold) !important; }
+
 /* ── TAB NAV ── */
 .tab-nav {
   background: var(--navy); border-bottom: 1px solid rgba(255,255,255,.1);
@@ -101,7 +105,7 @@ main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
 }
 @keyframes fadeUp {
   from { opacity:0; transform:translateY(14px); }
-  to   { opacity:1; transform:translateY(0); }
+  to { opacity:1; transform:translateY(0); }
 }
 .card-header {
   display: flex; align-items: center; gap: 12px;
@@ -158,7 +162,7 @@ main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
 }
 .subject-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── QUICK SUBJECTS (NEW) ── */
+/* ── QUICK SUBJECTS ── */
 .quick-subjects {
   display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
 }
@@ -304,7 +308,7 @@ main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
 .btn-del:hover { background: #ffebee; border-color: #e57373; color: var(--rose); }
 
 /* ── STATS & CHIPS ── */
-.subject-filter { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+.subject-filter, .type-filter { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .chip {
   padding: 5px 13px; border-radius: 20px; font-size: .78rem; font-weight: 500;
   border: 1px solid var(--border); background: var(--surface); color: var(--muted);
@@ -350,6 +354,10 @@ footer span { color: var(--gold); }
   .tab-btn { padding: 11px 14px; font-size: .78rem; }
   .chart-wrap { height: 240px; }
   .chart-wrap-radar { height: 280px; }
+  
+  .header-meta { flex-direction: column; align-items: flex-start !important; }
+  .demo-id-wrap { margin-top: 4px; width: 100%; }
+  #student-id-input { flex: 1; }
 }
 </style>
 </head>
@@ -361,9 +369,15 @@ footer span { color: var(--gold); }
     <div class="portal-label">Global Lingua Network &nbsp;/&nbsp; Score Tracker</div>
     <h1>成績記録 <em>Dashboard</em></h1>
     <p class="header-sub">定期テスト &amp; 模試の成績を手軽に記録してグラフで推移を確認</p>
-    <div class="header-meta">
-      <div class="meta-pill" id="hdr-count-teiki">定期テスト: <strong>0 件</strong></div>
-      <div class="meta-pill" id="hdr-count-moshi">模試: <strong>0 件</strong></div>
+    <div class="header-meta" style="justify-content: space-between;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="meta-pill" id="hdr-count-teiki">定期テスト: <strong>0 件</strong></div>
+        <div class="meta-pill" id="hdr-count-moshi">模試: <strong>0 件</strong></div>
+      </div>
+      <div class="demo-id-wrap" style="display: flex; align-items: center; gap: 8px;">
+        <label for="student-id-input" style="font-size: .75rem; color: #a8cef0; font-weight: 600; letter-spacing: .05em;">生徒ID</label>
+        <input type="text" id="student-id-input" placeholder="例: A001" oninput="handleStudentIdInput(this.value)" style="padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.1); color: #fff; font-size: .85rem; outline: none; width: 110px; font-family: inherit; transition: border-color .2s;">
+      </div>
     </div>
   </div>
 </header>
@@ -407,7 +421,30 @@ footer span { color: var(--gold); }
       <div class="form-grid">
         <div class="form-group" id="teiki-name-group">
           <label class="form-label">試験名</label>
-          <input type="text" id="teiki-name" class="form-input" placeholder="例：1学期中間考査">
+          <select id="teiki-name-sel" class="form-select" onchange="syncTeikiName()">
+            <option value="">選択してください</option>
+            <optgroup label="1学期・前期">
+              <option value="1学期中間考査">1学期中間考査</option>
+              <option value="1学期期末考査">1学期期末考査</option>
+              <option value="前期中間考査">前期中間考査</option>
+              <option value="前期期末考査">前期期末考査</option>
+            </optgroup>
+            <optgroup label="2学期・後期">
+              <option value="2学期中間考査">2学期中間考査</option>
+              <option value="2学期期末考査">2学期期末考査</option>
+              <option value="後期中間考査">後期中間考査</option>
+              <option value="後期期末考査">後期期末考査</option>
+            </optgroup>
+            <optgroup label="3学期・その他">
+              <option value="3学期期末考査">3学期期末考査</option>
+              <option value="学年末考査">学年末考査</option>
+              <option value="実力テスト">実力テスト</option>
+            </optgroup>
+            <optgroup label="その他">
+              <option value="other">その他（手入力）</option>
+            </optgroup>
+          </select>
+          <input type="text" id="teiki-name-custom" class="form-input" placeholder="試験名を入力" style="display:none; margin-top:6px;">
         </div>
         <div class="form-group">
           <label class="form-label">実施日</label>
@@ -581,21 +618,26 @@ footer span { color: var(--gold); }
           <label class="form-label">模試名</label>
           <select id="moshi-name-sel" class="form-select" onchange="syncMoshiName()">
             <option value="">選択してください</option>
-            <optgroup label="河合塾">
-              <option value="全統共通テスト模試">全統共通テスト模試</option>
-              <option value="全統記述模試">全統記述模試</option>
-              <option value="全統高1・2模試">全統高1・2模試</option>
+            <optgroup label="マーク模試">
+              <option value="全統共通テスト模試">全統共通テスト模試（河合塾）</option>
+              <option value="駿台共通テスト模試">駿台共通テスト模試（駿台）</option>
+              <option value="進研模試（共通テスト模試）">進研模試 共通テスト模試（ベネッセ）</option>
+              <option value="共通テスト本番レベル模試">共通テスト本番レベル模試（東進）</option>
+              <option value="県模試マーク">県模試マーク</option>
             </optgroup>
-            <optgroup label="駿台">
-              <option value="駿台全国模試">駿台全国模試</option>
-              <option value="駿台共通テスト模試">駿台共通テスト模試</option>
+            <optgroup label="記述模試">
+              <option value="全統記述模試">全統記述模試（河合塾）</option>
+              <option value="駿台全国模試">駿台全国模試（駿台）</option>
+              <option value="進研模試（記述）">進研模試 記述（ベネッセ）</option>
+              <option value="県模試記述">県模試記述</option>
             </optgroup>
-            <optgroup label="進研ゼミ・ベネッセ">
-              <option value="進研模試（共通テスト模試）">進研模試（共通テスト模試）</option>
-              <option value="進研模試（記述）">進研模試（記述）</option>
-            </optgroup>
-            <optgroup label="東進">
-              <option value="共通テスト本番レベル模試">共通テスト本番レベル模試</option>
+            <optgroup label="北陸地方の模試">
+              <option value="石川県総合模試">石川県総合模試</option>
+              <option value="富山県全県模試">富山県全県模試</option>
+              <option value="富山県立高校入試育英模試">富山県立高校入試育英模試</option>
+              <option value="福井県オープン模試">福井県オープン模試</option>
+              <option value="福井新聞模擬テスト">福井新聞模擬テスト</option>
+              <option value="福井県連合模試">福井県連合模試</option>
             </optgroup>
             <optgroup label="その他">
               <option value="other">その他（手入力）</option>
@@ -694,7 +736,13 @@ footer span { color: var(--gold); }
       </div>
     </div>
     <div class="card-body">
+      <!-- 種別フィルタ (マーク/記述) -->
+      <div class="sub-label" style="margin-bottom:8px; font-size:.7rem;">模試種別フィルタ</div>
+      <div class="type-filter" id="moshi-type-filter"></div>
+      
+      <div class="sub-label" style="margin-bottom:8px; font-size:.7rem;">科目フィルタ</div>
       <div class="subject-filter" id="moshi-filter"></div>
+
       <div class="chart-controls">
         <button class="btn-chart-ctrl" onclick="resetZoom('moshi-line')">🔍 全体表示</button>
       </div>
@@ -850,10 +898,17 @@ var SUBJECTS = {
   '中学科目':['理科', '地理', '歴史', '公民', '技術・家庭', '音楽', '美術', '保健体育']
 };
 
+// 模試種別判定用マスタ
+var MOSHI_TYPES = {
+  mark:['全統共通テスト模試', '駿台共通テスト模試', '進研模試（共通テスト模試）', '共通テスト本番レベル模試', '県模試マーク'],
+  written:['全統記述模試', '駿台全国模試', '進研模試（記述）', '県模試記述']
+};
+
 var COLORS =['#1a7fd4','#c89a2e','#2e7d32','#8e24aa','#e53935','#0097a7','#f57c00','#5c6bc0','#43a047','#795548','#00838f','#ad1457'];
-var DATA = { teiki: [], moshi:[] };
+var DATA = { teiki:[], moshi:[] };
 var CHARTS = {};
 var ACTIVE_FILTERS = { teiki: null, moshi: null };
+var ACTIVE_TYPE_FILTER = { moshi: null }; // 模試種別フィルタ
 var CUSTOM_MODE = { teiki: false, moshi: false };
 var EXAM_LOCK = { teiki: null, moshi: null };
 
@@ -861,6 +916,22 @@ var EXAM_LOCK = { teiki: null, moshi: null };
   loadData();
   buildSubjectSelects();
   setDefaultDates();
+
+  // ★ URLパラメータの取得処理を追加
+  var params = new URLSearchParams(window.location.search);
+  var urlId = params.get('id');
+  if (urlId) {
+    var idInput = document.getElementById('student-id-input');
+    if (idInput) {
+      idInput.value = urlId.toUpperCase();
+      // もしURLから渡されたIDがA001なら、自動でデモデータを展開する
+      if (urlId.toUpperCase() === 'A001') {
+        loadDemoDataA001();
+        // showToast('🚀 A001のサンプルデータを読み込みました'); // 表示したければ追加
+      }
+    }
+  }
+
   updateAll('teiki');
   updateAll('moshi');
   updateHeader();
@@ -872,7 +943,7 @@ function loadData() {
     var saved = localStorage.getItem('gln_scores');
     if (saved) DATA = JSON.parse(saved);
     if (!DATA.teiki) DATA.teiki =[];
-    if (!DATA.moshi) DATA.moshi = [];
+    if (!DATA.moshi) DATA.moshi =[];
   } catch(e) { DATA = { teiki: [], moshi:[] }; }
 }
 
@@ -988,6 +1059,16 @@ function setupEnterKeyNavigation() {
   });
 }
 
+function syncTeikiName() {
+  var sel = document.getElementById('teiki-name-sel'), custom = document.getElementById('teiki-name-custom');
+  if (sel.value === 'other') { custom.style.display = 'block'; custom.focus(); } else { custom.style.display = 'none'; }
+}
+
+function getTeikiName() {
+  var sel = document.getElementById('teiki-name-sel');
+  return (sel.value === 'other' || sel.value === '') ? document.getElementById('teiki-name-custom').value.trim() : sel.value;
+}
+
 function syncMoshiName() {
   var sel = document.getElementById('moshi-name-sel'), custom = document.getElementById('moshi-name-custom');
   if (sel.value === 'other') { custom.style.display = 'block'; custom.focus(); } else { custom.style.display = 'none'; }
@@ -998,13 +1079,20 @@ function getMoshiName() {
   return (sel.value === 'other' || sel.value === '') ? document.getElementById('moshi-name-custom').value.trim() : sel.value;
 }
 
+// 模試の種別を判定する関数
+function getMoshiType(name) {
+  if (MOSHI_TYPES.mark.indexOf(name) !== -1) return 'mark';
+  if (MOSHI_TYPES.written.indexOf(name) !== -1) return 'written';
+  return 'other'; // 分からない場合は other
+}
+
 // ════════════════════════════════════════════════════
 //  記録追加・クリア・削除
 // ════════════════════════════════════════════════════
 function addRecord(type) {
   var name;
   if (EXAM_LOCK[type]) name = EXAM_LOCK[type].name;
-  else name = type === 'teiki' ? document.getElementById('teiki-name').value.trim() : getMoshiName();
+  else name = type === 'teiki' ? getTeikiName() : getMoshiName();
   
   var date = document.getElementById(type + '-date').value;
   var grade = document.getElementById(type + '-grade').value;
@@ -1027,6 +1115,7 @@ function addRecord(type) {
     rec.hensachi = parseFloat(document.getElementById('moshi-hensachi').value) || 0;
     rec.rank = parseInt(document.getElementById('moshi-rank').value) || 0;
     rec.rankTotal = parseInt(document.getElementById('moshi-rank-total').value) || 0;
+    rec.type = getMoshiType(name);
   }
 
   DATA[type].push(rec);
@@ -1065,7 +1154,7 @@ function unlockExamName(type) {
     var dateField = document.getElementById('teiki-date');
     if (dateField) { dateField.disabled = false; dateField.focus(); }
   }
-  document.getElementById(type === 'teiki' ? 'teiki-name' : 'moshi-name-custom').focus();
+  document.getElementById(type === 'teiki' ? 'teiki-name-sel' : 'moshi-name-sel').focus();
 }
 
 function clearSubjectOnly(type) {
@@ -1089,14 +1178,21 @@ function clearForm(type) {
   if (bar) bar.style.display = 'none';
   var nameGroup = document.getElementById(type + '-name-group');
   if (nameGroup) nameGroup.style.display = '';
-  var allFields = type === 'teiki' ?['teiki-name','teiki-score','teiki-memo','teiki-rank','teiki-rank-total'] :['moshi-score','moshi-hensachi','moshi-memo','moshi-rank','moshi-rank-total'];
+  
+  // スコア・メモなどの共通フィールドのクリア
+  var allFields = type === 'teiki' ?['teiki-score','teiki-memo','teiki-rank','teiki-rank-total'] :['moshi-score','moshi-hensachi','moshi-memo','moshi-rank','moshi-rank-total'];
   allFields.forEach(function(id){ var el = document.getElementById(id); if(el) el.value = ''; });
+  
   document.getElementById(type + '-max').value = type === 'teiki' ? '100' : '200';
   document.getElementById(type + '-subject-sel').value = '';
   document.getElementById(type + '-subject-custom').value = '';
   CUSTOM_MODE[type] = false;
   document.getElementById(type + '-subject-custom').style.display = 'none';
+  
   if (type === 'teiki') {
+    document.getElementById('teiki-name-sel').value = '';
+    document.getElementById('teiki-name-custom').style.display = 'none';
+    document.getElementById('teiki-name-custom').value = '';
     var dateField = document.getElementById('teiki-date');
     if (dateField) { dateField.disabled = false; dateField.value = new Date().toISOString().slice(0,10); }
   } else {
@@ -1130,7 +1226,17 @@ function deleteExam(type) {
 // ════════════════════════════════════════════════════
 function updateAll(type) {
   var records = DATA[type];
-  var hasData = records.length > 0;
+
+  // 模試の場合、種別フィルタを適用
+  var filteredRecords = records;
+  if (type === 'moshi') {
+    if (ACTIVE_TYPE_FILTER.moshi) {
+      filteredRecords = records.filter(function(r) { return r.type === ACTIVE_TYPE_FILTER.moshi; });
+    }
+    renderTypeFilter();
+  }
+
+  var hasData = filteredRecords.length > 0;
 
   document.getElementById(type + '-bar-card').style.display    = hasData ? '' : 'none';
   document.getElementById(type + '-chart-card').style.display  = hasData ? '' : 'none';
@@ -1138,21 +1244,25 @@ function updateAll(type) {
   document.getElementById(type + '-table-card').style.display  = hasData ? '' : 'none';
   document.getElementById(type + '-stats-wrap').style.display  = hasData ? '' : 'none';
   if (type === 'moshi') {
-    var hasHensachi = records.some(function(r){ return r.hensachi > 0; });
+    var hasHensachi = filteredRecords.some(function(r){ return r.hensachi > 0; });
     document.getElementById('moshi-hensachi-card').style.display = hasHensachi ? '' : 'none';
   }
 
-  if (!hasData) { updateBadge(type, 0); return; }
+  if (!hasData) { 
+    if(type === 'moshi') updateBadge('moshi', records.length);
+    else updateBadge(type, 0); 
+    return; 
+  }
 
   updateBadge(type, records.length);
-  updateStats(type, records);
-  buildFilter(type, records);
-  renderBarChart(type, records);
-  renderLineChart(type, records);
-  renderRadarChart(type, records);
-  if (type === 'moshi') renderHensachiChart(records);
-  renderTable(type, records);
-  updateExamDelSelect(type, records);
+  updateStats(type, filteredRecords);
+  buildFilter(type, filteredRecords);
+  renderBarChart(type, filteredRecords);
+  renderLineChart(type, filteredRecords);
+  renderRadarChart(type, filteredRecords);
+  if (type === 'moshi') renderHensachiChart(filteredRecords);
+  renderTable(type, filteredRecords);
+  updateExamDelSelect(type, filteredRecords);
 }
 
 function updateBadge(type, count) { document.getElementById('badge-' + type).textContent = count; }
@@ -1212,8 +1322,29 @@ function buildFilter(type, records) {
 
 function setFilter(type, subject) {
   ACTIVE_FILTERS[type] = subject;
-  buildFilter(type, DATA[type]);
-  renderLineChart(type, DATA[type]);
+  updateAll(type);
+}
+
+function renderTypeFilter() {
+  var container = document.getElementById('moshi-type-filter');
+  var types =[
+    { id: null, label: 'すべて' },
+    { id: 'mark', label: 'マーク模試' },
+    { id: 'written', label: '記述模試' }
+  ];
+  
+  var html = '';
+  types.forEach(function(t) {
+    var active = ACTIVE_TYPE_FILTER.moshi === t.id ? ' active' : '';
+    html += '<button class="chip' + active + '" onclick="setTypeFilter(\'' + (t.id || 'null') + '\')">' + t.label + '</button>';
+  });
+  container.innerHTML = html;
+}
+
+function setTypeFilter(typeId) {
+  ACTIVE_TYPE_FILTER.moshi = (typeId === 'null') ? null : typeId;
+  ACTIVE_FILTERS.moshi = null; 
+  updateAll('moshi');
 }
 
 // ════════════════════════════════════════════════════
@@ -1282,7 +1413,7 @@ function renderLineChart(type, records) {
   examKeys.sort(function(a,b){ return a.key.localeCompare(b.key); });
 
   var chartLabels = examKeys.map(function(e){ return fmtDate(e.date) + '\n' + (e.name.length > 10 ? e.name.slice(0,10)+'…' : e.name); });
-  var examBorderIndices = [];
+  var examBorderIndices =[];
   for (var bi = 1; bi < examKeys.length; bi++) { if (examKeys[bi].name !== examKeys[bi-1].name) examBorderIndices.push(bi); }
 
   var datasets = subjects.map(function(subj, i) {
@@ -1361,7 +1492,7 @@ function renderRadarChart(type, records) {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } }, tooltip: { callbacks: { label: function(c){ return ' ' + c.label + ': ' + c.raw + '%'; } } } },
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + c.raw + '%'; } } } },
       scales: { r: { min: 0, max: 100, ticks: { stepSize: 20, font: { size: 10 }, color: '#5c6e82' }, grid: { color: '#dce8f4' }, angleLines: { color: '#dce8f4' }, pointLabels: { font: { family: 'DM Sans', size: 12 }, color: '#1a2535' } } }
     }
   });
@@ -1440,7 +1571,7 @@ function renderTable(type, records) {
       var pct = r.score / r.max * 100, pctStr = Math.round(pct * 10) / 10 + '%';
       var pctCls = pct >= 90 ? 'pct-s' : pct >= 75 ? 'pct-a' : pct >= 60 ? 'pct-b' : pct >= 40 ? 'pct-c' : 'pct-d';
       var extraTd = type === 'moshi' ? '<td style="color:var(--muted);font-size:.82rem">' + (r.hensachi > 0 ? r.hensachi : '—') + '</td>' : '<td style="color:var(--muted);font-size:.78rem">' + (r.rank > 0 ? r.rank + '/' + (r.rankTotal||'?') + '位' : '—') + '</td>';
-      var gradeSpan = r.grade ? ' <span style="font-size:.68rem;color:var(--muted)">(' + esc(r.grade) + ')</span>' : '';
+      var gradeSpan = r.grade ? ' <span style="font-size:.68rem;color:var(--muted)">(' + esc(r.grade) + ' )</span>' : '';
       html += '<tr><td><strong style="font-size:.88rem">' + esc(r.subject) + '</strong>' + gradeSpan + '</td>'
         + '<td style="font-size:.88rem">' + r.score + '<span style="color:var(--muted);font-size:.75rem">/' + r.max + '</span></td>'
         + '<td><span class="score-pct ' + pctCls + '">' + pctStr + '</span></td>'
@@ -1493,7 +1624,10 @@ function saveEdit() {
   rec.name = name; rec.date = date; rec.grade = document.getElementById('edit-grade').value; rec.subject = subject;
   rec.score = score; rec.max = max; rec.rank = parseInt(document.getElementById('edit-rank').value) || 0;
   rec.rankTotal = parseInt(document.getElementById('edit-rank-total').value) || 0; rec.memo = document.getElementById('edit-memo').value.trim();
-  if (type === 'moshi') rec.hensachi = parseFloat(document.getElementById('edit-hensachi').value) || 0;
+  if (type === 'moshi') {
+    rec.hensachi = parseFloat(document.getElementById('edit-hensachi').value) || 0;
+    rec.type = getMoshiType(name); // 名前変更に伴い種別を再判定
+  }
 
   DATA[type].sort(function(a,b){ return a.date.localeCompare(b.date) || a.name.localeCompare(b.name); });
   saveData(); updateAll(type); updateHeader(); closeEditModal();
@@ -1508,6 +1642,116 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3000);
 }
+
+// ════════════════════════════════════════════════════
+//  デモデータ機能
+// ════════════════════════════════════════════════════
+function handleStudentIdInput(val) {
+  if (val.trim().toUpperCase() === 'A001') {
+    if (confirm('生徒ID「A001」が入力されました。\n国公立大学志望ハイレベル層のデモデータを読み込みますか？\n(現在のデータはすべて上書きされます)')) {
+      loadDemoDataA001();
+      document.getElementById('student-id-input').value = '';
+      showToast('🚀 A001のサンプルデータを読み込みました');
+    } else {
+      document.getElementById('student-id-input').value = '';
+    }
+  }
+}
+
+function loadDemoDataA001() {
+  var demoTeiki =[
+    // 1学期中間考査 (5月)
+    { id: 101, name: "1学期中間考査", date: "2026-05-20", grade: "高3", subject: "英語", score: 86, max: 100, memo: "安定", rank: 12, rankTotal: 250 },
+    { id: 102, name: "1学期中間考査", date: "2026-05-20", grade: "高3", subject: "数学", score: 88, max: 100, memo: "", rank: 10, rankTotal: 250 },
+    { id: 103, name: "1学期中間考査", date: "2026-05-20", grade: "高3", subject: "国語", score: 82, max: 100, memo: "", rank: 25, rankTotal: 250 },
+    { id: 104, name: "1学期中間考査", date: "2026-05-20", grade: "高3", subject: "歴史", score: 90, max: 100, memo: "", rank: 5, rankTotal: 250 },
+    { id: 105, name: "1学期中間考査", date: "2026-05-20", grade: "高3", subject: "理科", score: 84, max: 100, memo: "", rank: 15, rankTotal: 250 },
+    
+    // 1学期期末考査 (7月)
+    { id: 111, name: "1学期期末考査", date: "2026-07-05", grade: "高3", subject: "英語", score: 85, max: 100, memo: "", rank: 15, rankTotal: 250 },
+    { id: 112, name: "1学期期末考査", date: "2026-07-05", grade: "高3", subject: "数学", score: 92, max: 100, memo: "", rank: 5, rankTotal: 250 },
+    { id: 113, name: "1学期期末考査", date: "2026-07-05", grade: "高3", subject: "国語", score: 80, max: 100, memo: "", rank: 30, rankTotal: 250 },
+    { id: 114, name: "1学期期末考査", date: "2026-07-05", grade: "高3", subject: "歴史", score: 88, max: 100, memo: "", rank: 8, rankTotal: 250 },
+    { id: 115, name: "1学期期末考査", date: "2026-07-05", grade: "高3", subject: "理科", score: 90, max: 100, memo: "", rank: 6, rankTotal: 250 },
+
+    // 2学期中間考査 (10月)
+    { id: 121, name: "2学期中間考査", date: "2026-10-15", grade: "高3", subject: "英語", score: 92, max: 100, memo: "", rank: 3, rankTotal: 250 },
+    { id: 122, name: "2学期中間考査", date: "2026-10-15", grade: "高3", subject: "数学", score: 90, max: 100, memo: "", rank: 8, rankTotal: 250 },
+    { id: 123, name: "2学期中間考査", date: "2026-10-15", grade: "高3", subject: "国語", score: 85, max: 100, memo: "", rank: 15, rankTotal: 250 },
+    { id: 124, name: "2学期中間考査", date: "2026-10-15", grade: "高3", subject: "歴史", score: 95, max: 100, memo: "トップクラス", rank: 2, rankTotal: 250 },
+    { id: 125, name: "2学期中間考査", date: "2026-10-15", grade: "高3", subject: "理科", score: 92, max: 100, memo: "", rank: 4, rankTotal: 250 },
+
+    // 2学期期末考査 (11月)
+    { id: 131, name: "2学期期末考査", date: "2026-11-25", grade: "高3", subject: "英語", score: 90, max: 100, memo: "", rank: 5, rankTotal: 250 },
+    { id: 132, name: "2学期期末考査", date: "2026-11-25", grade: "高3", subject: "数学", score: 95, max: 100, memo: "", rank: 2, rankTotal: 250 },
+    { id: 133, name: "2学期期末考査", date: "2026-11-25", grade: "高3", subject: "国語", score: 88, max: 100, memo: "", rank: 10, rankTotal: 250 },
+    { id: 134, name: "2学期期末考査", date: "2026-11-25", grade: "高3", subject: "歴史", score: 92, max: 100, memo: "", rank: 5, rankTotal: 250 },
+    { id: 135, name: "2学期期末考査", date: "2026-11-25", grade: "高3", subject: "理科", score: 96, max: 100, memo: "", rank: 2, rankTotal: 250 }
+  ];
+
+  var demoMoshi =[
+    // 記述1回 (5月) - マークより低く設定
+    { id: 201, name: "全統記述模試", type: "written", date: "2026-05-10", grade: "高3", subject: "英語", score: 80, max: 200, hensachi: 54.5, memo: "長文で時間切れ", rank: 12000, rankTotal: 50000 },
+    { id: 202, name: "全統記述模試", type: "written", date: "2026-05-10", grade: "高3", subject: "数学", score: 90, max: 200, hensachi: 56.2, memo: "計算ミス多発", rank: 9500, rankTotal: 50000 },
+    { id: 203, name: "全統記述模試", type: "written", date: "2026-05-10", grade: "高3", subject: "国語", score: 75, max: 200, hensachi: 52.0, memo: "記述が書けない", rank: 15000, rankTotal: 50000 },
+    { id: 204, name: "全統記述模試", type: "written", date: "2026-05-10", grade: "高3", subject: "歴史", score: 35, max: 100, hensachi: 50.5, memo: "未習範囲が多かった", rank: 18000, rankTotal: 50000 },
+    { id: 205, name: "全統記述模試", type: "written", date: "2026-05-10", grade: "高3", subject: "理科", score: 40, max: 100, hensachi: 51.0, memo: "基礎の理解不足", rank: 16000, rankTotal: 50000 },
+
+    // マーク1回 (6月) - 基礎確認
+    { id: 211, name: "全統共通テスト模試", type: "mark", date: "2026-06-05", grade: "高3", subject: "英語", score: 135, max: 200, hensachi: 60.1, memo: "文法は取れた", rank: 8000, rankTotal: 80000 },
+    { id: 212, name: "全統共通テスト模試", type: "mark", date: "2026-06-05", grade: "高3", subject: "数学", score: 145, max: 200, hensachi: 62.5, memo: "誘導には乗れた", rank: 6000, rankTotal: 80000 },
+    { id: 213, name: "全統共通テスト模試", type: "mark", date: "2026-06-05", grade: "高3", subject: "国語", score: 125, max: 200, hensachi: 58.0, memo: "古文で失点", rank: 12000, rankTotal: 80000 },
+    { id: 214, name: "全統共通テスト模試", type: "mark", date: "2026-06-05", grade: "高3", subject: "歴史", score: 55, max: 100, hensachi: 55.5, memo: "基礎は定着しつつある", rank: 15000, rankTotal: 80000 },
+    { id: 215, name: "全統共通テスト模試", type: "mark", date: "2026-06-05", grade: "高3", subject: "理科", score: 65, max: 100, hensachi: 58.2, memo: "計算問題は解けた", rank: 10000, rankTotal: 80000 },
+
+    // 記述2回 (8月) - 少し伸びる
+    { id: 221, name: "全統記述模試", type: "written", date: "2026-08-20", grade: "高3", subject: "英語", score: 105, max: 200, hensachi: 58.0, memo: "和訳の精度向上", rank: 8000, rankTotal: 60000 },
+    { id: 222, name: "全統記述模試", type: "written", date: "2026-08-20", grade: "高3", subject: "数学", score: 115, max: 200, hensachi: 60.5, memo: "典型問題は完答", rank: 6500, rankTotal: 60000 },
+    { id: 223, name: "全統記述模試", type: "written", date: "2026-08-20", grade: "高3", subject: "国語", score: 95, max: 200, hensachi: 55.0, memo: "漢文が読めるようになった", rank: 12000, rankTotal: 60000 },
+    { id: 224, name: "全統記述模試", type: "written", date: "2026-08-20", grade: "高3", subject: "歴史", score: 50, max: 100, hensachi: 56.5, memo: "通史終了", rank: 9000, rankTotal: 60000 },
+    { id: 225, name: "全統記述模試", type: "written", date: "2026-08-20", grade: "高3", subject: "理科", score: 55, max: 100, hensachi: 57.0, memo: "応用問題に手応え", rank: 8500, rankTotal: 60000 },
+
+    // マーク2回 (9月) - 停滞（夏休み明けの模試で点が伸び悩み）
+    { id: 231, name: "全統共通テスト模試", type: "mark", date: "2026-09-05", grade: "高3", subject: "英語", score: 130, max: 200, hensachi: 57.5, memo: "情報処理に手間取った", rank: 15000, rankTotal: 90000 },
+    { id: 232, name: "全統共通テスト模試", type: "mark", date: "2026-09-05", grade: "高3", subject: "数学", score: 135, max: 200, hensachi: 59.0, memo: "難化に焦った", rank: 12000, rankTotal: 90000 },
+    { id: 233, name: "全統共通テスト模試", type: "mark", date: "2026-09-05", grade: "高3", subject: "国語", score: 120, max: 200, hensachi: 55.5, memo: "小説で大失点", rank: 20000, rankTotal: 90000 },
+    { id: 234, name: "全統共通テスト模試", type: "mark", date: "2026-09-05", grade: "高3", subject: "歴史", score: 58, max: 100, hensachi: 56.0, memo: "近代史が抜けていた", rank: 18000, rankTotal: 90000 },
+    { id: 235, name: "全統共通テスト模試", type: "mark", date: "2026-09-05", grade: "高3", subject: "理科", score: 62, max: 100, hensachi: 56.5, memo: "マークミスあり", rank: 17000, rankTotal: 90000 },
+
+    // 記述3回 (10月) - 記述力向上
+    { id: 241, name: "全統記述模試", type: "written", date: "2026-10-20", grade: "高3", subject: "英語", score: 125, max: 200, hensachi: 62.0, memo: "要約問題クリア", rank: 4000, rankTotal: 60000 },
+    { id: 242, name: "全統記述模試", type: "written", date: "2026-10-20", grade: "高3", subject: "数学", score: 135, max: 200, hensachi: 64.5, memo: "証明問題で完答", rank: 3000, rankTotal: 60000 },
+    { id: 243, name: "全統記述模試", type: "written", date: "2026-10-20", grade: "高3", subject: "国語", score: 115, max: 200, hensachi: 59.5, memo: "論理展開をつかめた", rank: 7000, rankTotal: 60000 },
+    { id: 244, name: "全統記述模試", type: "written", date: "2026-10-20", grade: "高3", subject: "歴史", score: 68, max: 100, hensachi: 62.5, memo: "論述対策の成果", rank: 3500, rankTotal: 60000 },
+    { id: 245, name: "全統記述模試", type: "written", date: "2026-10-20", grade: "高3", subject: "理科", score: 72, max: 100, hensachi: 63.0, memo: "全体的に安定", rank: 3200, rankTotal: 60000 },
+
+    // マーク3回 (11月) - 伸び
+    { id: 251, name: "全統共通テスト模試", type: "mark", date: "2026-11-05", grade: "高3", subject: "英語", score: 165, max: 200, hensachi: 67.5, memo: "時間内に解き切れた", rank: 2500, rankTotal: 90000 },
+    { id: 252, name: "全統共通テスト模試", type: "mark", date: "2026-11-05", grade: "高3", subject: "数学", score: 172, max: 200, hensachi: 69.0, memo: "過去問演習の成果！", rank: 1500, rankTotal: 90000 },
+    { id: 253, name: "全統共通テスト模試", type: "mark", date: "2026-11-05", grade: "高3", subject: "国語", score: 155, max: 200, hensachi: 64.0, memo: "選択肢の吟味が正確に", rank: 4000, rankTotal: 90000 },
+    { id: 254, name: "全統共通テスト模試", type: "mark", date: "2026-11-05", grade: "高3", subject: "歴史", score: 85, max: 100, hensachi: 66.5, memo: "年号暗記完了", rank: 2000, rankTotal: 90000 },
+    { id: 255, name: "全統共通テスト模試", type: "mark", date: "2026-11-05", grade: "高3", subject: "理科", score: 88, max: 100, hensachi: 67.0, memo: "満点狙えた", rank: 1800, rankTotal: 90000 },
+
+    // 記述直前 (12月) - さらに向上し、2次力完成へ
+    { id: 261, name: "全統記述模試", type: "written", date: "2026-12-05", grade: "高3", subject: "英語", score: 145, max: 200, hensachi: 66.5, memo: "2次試験レベル対応可", rank: 1500, rankTotal: 50000 },
+    { id: 262, name: "全統記述模試", type: "written", date: "2026-12-05", grade: "高3", subject: "数学", score: 155, max: 200, hensachi: 68.5, memo: "難問も部分点を確保", rank: 1000, rankTotal: 50000 },
+    { id: 263, name: "全統記述模試", type: "written", date: "2026-12-05", grade: "高3", subject: "国語", score: 135, max: 200, hensachi: 64.5, memo: "記述の文字数調整OK", rank: 2500, rankTotal: 50000 },
+    { id: 264, name: "全統記述模試", type: "written", date: "2026-12-05", grade: "高3", subject: "歴史", score: 78, max: 100, hensachi: 67.0, memo: "論述の精度が非常に高い", rank: 1200, rankTotal: 50000 },
+    { id: 265, name: "全統記述模試", type: "written", date: "2026-12-05", grade: "高3", subject: "理科", score: 82, max: 100, hensachi: 68.0, memo: "応用問題もクリア", rank: 1000, rankTotal: 50000 }
+  ];
+
+  DATA = { teiki: demoTeiki, moshi: demoMoshi };
+  saveData();
+  
+  // フィルタの初期化
+  ACTIVE_FILTERS = { teiki: null, moshi: null };
+  ACTIVE_TYPE_FILTER = { moshi: null };
+  
+  updateAll('teiki');
+  updateAll('moshi');
+  updateHeader();
+}
+
 </script>
 </body>
 </html>
