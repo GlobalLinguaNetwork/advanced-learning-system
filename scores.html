@@ -342,6 +342,7 @@ main { max-width: 960px; margin: 28px auto 0; padding: 0 16px; }
   margin-bottom: 20px; padding: 6px 12px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; transition: background .15s;
+  cursor: pointer; font-family: inherit;
 }
 .back-link:hover { background: #e8f2fc; }
 footer { margin-top: 40px; text-align: center; font-size: .75rem; color: var(--muted); }
@@ -395,7 +396,7 @@ footer span { color: var(--gold); }
 </nav>
 
 <main>
-<a class="back-link" href="index.html">← ポータルに戻る</a>
+<button class="back-link" onclick="goBackToPortal()">← ポータルに戻る</button>
 
 <!-- ════════════════════════════════
      TAB: 定期テスト
@@ -1656,6 +1657,18 @@ function handleStudentIdInput(val) {
       document.getElementById('student-id-input').value = '';
     }
   }
+}
+
+// ── ポータルへ戻る（タブを閉じる）──
+function goBackToPortal() {
+  var params = new URLSearchParams(location.search);
+  var sid = params.get('id') || '';
+  if (window.opener && !window.opener.closed) {
+    window.opener.focus();
+    window.close();
+    return;
+  }
+  location.href = 'index.html' + (sid ? '?id=' + encodeURIComponent(sid) : '');
 }
 
 function loadDemoDataA001() {

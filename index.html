@@ -369,7 +369,7 @@ footer span { color: var(--gold); }
 
       <div class="sub-section">
         <div class="sub-label">多読・多聴 &nbsp;— &nbsp;毎日 1 本以上</div>
-        <p class="hint">完了時に「学習した記事のタイトル」を手入力して記録します。</p>
+        <p class="hint">「開始」を押すと学習サイトが<strong>別タブ</strong>で開きます。学習後はそのタブを<strong>閉じて</strong>ポータルに戻り、「完了記録」を押してください。</p>
         <div class="btn-grid">
 
           <div class="mat-item">
@@ -443,7 +443,7 @@ footer span { color: var(--gold); }
 
       <div class="sub-section">
         <div class="sub-label">リスニング精聴トレーニング</div>
-        <p class="hint">完了時に「学習した記事のタイトル」を手入力して記録します。</p>
+        <p class="hint">「開始」を押すと学習サイトが<strong>別タブ</strong>で開きます。学習後はそのタブを<strong>閉じて</strong>ポータルに戻り、「完了記録」を押してください。</p>
         <div class="btn-grid">
 
           <div class="mat-item">
@@ -575,7 +575,7 @@ footer span { color: var(--gold); }
           <span class="mat-btn-meta">個別フォルダ・添削資料</span>
         </button>
 
-        <button class="mat-btn" onclick="recordActivity(this,'Portal','成績管理データ',0, 'scores.html')">
+        <button class="mat-btn" onclick="recordActivity(this,'Portal','成績管理データ',0,'scores.html','gln_mgmt')">
           <span class="send-badge">✓ 開きました</span>
           <span class="mat-btn-icon">📝</span>
           <span class="mat-btn-name">成績管理データ</span>
@@ -889,9 +889,19 @@ function startTask(btn, cat, title, url) {
   showToast('🚀 学習を開始しました: ' + title);
 
   if(url) {
-    var separator = url.includes('?') ? '&' : '?';
-    var targetUrl = url + separator + 'id=' + encodeURIComponent(sid);
-    window.open(targetUrl, '_blank');
+    var targetUrl;
+    if (isPostMsgApp) {
+      // 自作アプリ（シス単・Vocab Master・文法プリント）: id パラメータを付与
+      var sep = url.includes('?') ? '&' : '?';
+      targetUrl = url + sep + 'id=' + encodeURIComponent(sid);
+    } else {
+      // 外部サイト（VOA・News in Levels・Science News・TED等）: id パラメータ不要
+      targetUrl = url;
+    }
+    // 固定ターゲット名 'gln_child' により、学習タブは常に1枚だけ維持される。
+    // 外部サイトはブラウザセキュリティ上 window.close() 不可のため、
+    // ポータルは元タブにそのまま残り、学習タブを手動で閉じて戻る運用とする。
+    window.open(targetUrl, 'gln_child');
   }
 }
 
@@ -928,8 +938,8 @@ function endTask(btn, cat, title, words, requireInput) {
   setTimeout(function(){ item.classList.remove('sent'); }, 2000);
 }
 
-function recordActivity(btn, cat, title, words, targetUrl = null){
-  const sid = document.getElementById('sid').value.toUpperCase();
+function recordActivity(btn, cat, title, words, targetUrl, windowTarget){
+  var sid = document.getElementById('sid').value.toUpperCase();
   if(!VALID_IDS.includes(sid) && !isAdmin()) {
     alert("有効な Student ID を入力してください。");
     document.getElementById('sid').focus();
@@ -941,14 +951,14 @@ function recordActivity(btn, cat, title, words, targetUrl = null){
   });
 
   btn.classList.add('sent');
-  setTimeout(() => { btn.classList.remove('sent'); }, 2000);
+  setTimeout(function(){ btn.classList.remove('sent'); }, 2000);
   addLog('アクセス', cat, title, '', 0);
   showToast('✅ ' + title + ' の記録を送信しました');
 
   if(targetUrl && targetUrl !== "") {
-    // 【修正】 URLに id パラメータを付与する
-    const separator = targetUrl.includes('?') ? '&' : '?';
-    window.open(targetUrl + separator + 'id=' + encodeURIComponent(sid), '_blank');
+    var separator = targetUrl.includes('?') ? '&' : '?';
+    var target = windowTarget || 'gln_child';
+    window.open(targetUrl + separator + 'id=' + encodeURIComponent(sid), target);
   }
 }
 
@@ -1004,7 +1014,7 @@ function openDashboard(btn) {
     }
     
     const url = 'dashboard.html?id=' + encodeURIComponent(cleanId);
-    window.open(url, '_blank');
+    window.open(url, 'gln_mgmt');
     showToast('📊 ' + cleanId + ' のダッシュボードを開きました');
     return;
   }
@@ -1020,7 +1030,7 @@ function openDashboard(btn) {
   if (url && url !== "") {
     const separator = url.includes('?') ? '&' : '?';
     url = url + separator + 'id=' + encodeURIComponent(sid);
-    recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url);
+    recordActivity(btn, 'Portal', '自宅学習の進捗確認', 0, url, 'gln_mgmt');
   } else {
     alert("このIDのダッシュボードはまだ準備されていません。");
   }
@@ -1036,11 +1046,23 @@ function openOneDrive(btn) {
   
   const url = ONEDRIVE_LINKS[sid];
   
-  if (url && url !== "") {
-    recordActivity(btn, 'Portal', 'OneDrive資料', 0, url);
-  } else {
+  if (!url || url === "") {
     alert("このIDのOneDriveフォルダはまだ準備されていません。");
+    return;
   }
+
+  // 記録送信（URLは開かない）
+  hiddenPost({ id: sid, cat: 'Portal', status: 'アクセス', task: 'OneDrive資料', detail: '', duration: 0, words: 0 });
+  addLog('アクセス', 'Portal', 'OneDrive資料', '', 0);
+  showToast('✅ OneDrive資料 の記録を送信しました');
+  btn.classList.add('sent');
+  setTimeout(function(){ btn.classList.remove('sent'); }, 2000);
+
+  // OneDriveの短縮URLは独自クエリ文字列を含むため id パラメータを付加しない。
+  // スマホでのポップアップブロック回避のため location.href で直接遷移する。
+  // （PCでは新規タブで開きたい場合、window.open も選択可能だが
+  //   モバイルSafari/Chrome では onclick 内の window.open はブロックされやすい）
+  location.href = url;
 }
 </script>
 
